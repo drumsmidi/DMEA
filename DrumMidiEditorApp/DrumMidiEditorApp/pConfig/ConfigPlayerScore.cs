@@ -11,7 +11,7 @@ namespace DrumMidiEditorApp.pConfig;
 /// <summary>
 /// プレイヤー設定
 /// </summary>
-public class ConfigPlayerScoreType2 : IConfig
+public class ConfigPlayerScore : IConfig
 {
     public void CheckValidation()
     {
@@ -323,79 +323,11 @@ public class ConfigPlayerScoreType2 : IConfig
     /// スコア最大高さ
     /// </summary>
     [JsonIgnore]
-    public float ScoreMaxHeight => NoteTermHeightSize * ScaleList.Count;
+    public float ScoreMaxHeight => NoteTermHeightSize * Config.Player.ScaleList.Count;
 
     /// <summary>
     /// １小節の横幅
     /// </summary>
     [JsonIgnore]
     public float MeasureSize => NoteTermWidthSize * Config.System.MeasureNoteNumber;
-
-    #region 音階
-
-    /// <summary>
-    /// 音階リスト
-    /// </summary>
-    [JsonInclude]
-    public List<ConfigPlayerScoreType2ScaleItem> ScaleList =
-    [
-        new ( "DUMMY", "", true    ),
-        new ( "CY"   , "", false   ),
-        new ( "RD"   , "", true    ),
-        new ( "HH"   , "", false   ),
-        new ( "SD"   , "", false   ),
-        new ( "TM"   , "", false   ),
-      //new ( "HT"   , "", true    ),
-      //new ( "MT"   , "", false   ),
-      //new ( "LT"   , "", false   ),
-      //new ( "FT1"  , "", false   ),
-      //new ( "FT2"  , "", true    ),
-        new ( "BD"   , "", true    ),
-        new ( "PC"   , "", false   ),
-    ];
-
-    /// <summary>
-    /// 音階リスト更新
-    /// </summary>
-    public void UpdateScaleList( List<ConfigPlayerScoreType2ScaleItem> aScaleList )
-    {
-        lock ( ScaleList )
-        {
-            ScaleList.Clear();
-            aScaleList.ForEach( item => ScaleList.Add( new( item ) ) );
-        }
-    }
-
-    /// <summary>
-    /// 音階リストのインデックス番号取得
-    /// </summary>
-    /// <param name="aScaleKey">[音階キー] ( 例: "CY" )</param>
-    /// <param name="aScaleKeyText">[音階テキスト] ( 例: "1" )</param>
-    /// <returns>階リストのインデックス番号</returns>
-    public (int, string) GetScaleListIndex( string aScaleKey, string aScaleKeyText )
-    {
-        if ( aScaleKey.Length == 0 )
-        {
-            return ( -1, string.Empty );
-        }
-
-        var index = -1;
-
-        lock ( ScaleList )
-        {
-            foreach ( var item in ScaleList )
-            {
-                index++;
-
-                if ( item.ScaleKey.Equals( aScaleKey ) )
-                {
-                    return ( index, aScaleKeyText );
-                }
-            }
-        }
-
-        return ( -1, string.Empty );
-    }
-
-    #endregion
 }

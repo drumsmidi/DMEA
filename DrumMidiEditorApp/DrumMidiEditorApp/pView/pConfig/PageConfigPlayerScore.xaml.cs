@@ -12,12 +12,12 @@ using Microsoft.UI.Xaml.Media;
 
 namespace DrumMidiEditorApp.pView.pConfig;
 
-public sealed partial class PageConfigPlayerScoreType2 : Page, INotifyPropertyChanged
+public sealed partial class PageConfigPlayerScore : Page, INotifyPropertyChanged
 {
     /// <summary>
     /// コンストラクタ
     /// </summary>
-    public PageConfigPlayerScoreType2()
+    public PageConfigPlayerScore()
     {
         InitializeComponent();
 
@@ -57,12 +57,7 @@ public sealed partial class PageConfigPlayerScoreType2 : Page, INotifyPropertyCh
     /// <summary>
     /// 描画設定
     /// </summary>
-    private ConfigPlayer DrawSetPlayer => Config.Player;
-
-    /// <summary>
-    /// 描画設定
-    /// </summary>
-    private ConfigPlayerScoreType2 DrawSet => Config.Player.ScoreType2;
+    private ConfigPlayerScore DrawSet => Config.Player.Score;
 
     #endregion
 
@@ -117,24 +112,6 @@ public sealed partial class PageConfigPlayerScoreType2 : Page, INotifyPropertyCh
     #endregion
 
     #region 描画設定
-
-    /// <summary>
-    /// 共通：トグル切替(DarkMode)
-    /// </summary>
-    /// <param name="aSender"></param>
-    /// <param name="aArgs"></param>
-    private void DarkModeToggleSwitch_Toggled( object aSender, RoutedEventArgs aArgs )
-    {
-        try
-        {
-            NotifyAllPropertiesUsingReflection();
-            EventManage.Event_Player_UpdateScore();
-        }
-        catch ( Exception e )
-        {
-            Log.Error( e );
-        }
-    }
 
     /// <summary>
     /// ノートサイズ変更

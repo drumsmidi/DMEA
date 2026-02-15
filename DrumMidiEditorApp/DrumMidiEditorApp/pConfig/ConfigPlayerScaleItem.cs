@@ -5,12 +5,12 @@ namespace DrumMidiEditorApp.pConfig;
 /// <summary>
 /// 音階アイテム
 /// </summary>
-public class ConfigPlayerScoreType2ScaleItem
+public class ConfigPlayerScaleItem
 {
     /// <summary>
     /// コンストラクタ
     /// </summary>
-    public ConfigPlayerScoreType2ScaleItem()
+    public ConfigPlayerScaleItem()
     {
     }
 
@@ -20,7 +20,7 @@ public class ConfigPlayerScoreType2ScaleItem
     /// <param name="aScaleKey">音階キー</param>
     /// <param name="aLabel">ラベル</param>
     /// <param name="aLineDrawFlag">ライン描画フラグ</param>
-    public ConfigPlayerScoreType2ScaleItem( string aScaleKey, string aLabel, bool aLineDrawFlag )
+    public ConfigPlayerScaleItem( string aScaleKey, string aLabel, bool aLineDrawFlag )
     {
         ScaleKey        = aScaleKey;
         Label           = aLabel;
@@ -31,7 +31,7 @@ public class ConfigPlayerScoreType2ScaleItem
     /// コンストラクタ
     /// </summary>
     /// <param name="aScaleItem">コピー元</param>
-    public ConfigPlayerScoreType2ScaleItem( ConfigPlayerScoreType2ScaleItem aScaleItem )
+    public ConfigPlayerScaleItem( ConfigPlayerScaleItem aScaleItem )
     {
         ScaleKey        = aScaleItem.ScaleKey;
         Label           = aScaleItem.Label;

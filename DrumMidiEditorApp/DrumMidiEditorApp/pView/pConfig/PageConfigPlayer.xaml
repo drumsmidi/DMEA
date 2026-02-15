@@ -2,6 +2,7 @@
     x:Class="DrumMidiEditorApp.pView.pConfig.PageConfigPlayer"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DrumMidiEditorApp.pView.pConfig"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     
     <Grid>
@@ -25,7 +26,9 @@
                 ItemsSource="{x:Bind _PlayerScreenSizeList, Mode=OneTime}"
                 SelectedIndex="{x:Bind DrawSet.ResolutionScreenIndex, Mode=TwoWay}"
                 SelectionChanged="PlayerScreenSizeComboBox_SelectionChanged" />
-            
+
+            <local:UserControlPlayerScaleItem />
+
         </StackPanel>
     </Grid>
 </Page>

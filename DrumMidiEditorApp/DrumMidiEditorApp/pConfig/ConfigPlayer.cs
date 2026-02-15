@@ -22,9 +22,9 @@ public class ConfigPlayer : IConfig
         Fps                             = Math.Clamp( Fps, 30, 999 );
         ResolutionScreenIndex           = Math.Clamp( ResolutionScreenIndex, 0, ResolutionScreenList.Count - 1 );
 
+        Score.CheckValidation();
         Sequence.CheckValidation();
         Simuration.CheckValidation();
-        ScoreType2.CheckValidation();
     }
 
     #region 更新フラグ
@@ -77,7 +77,7 @@ public class ConfigPlayer : IConfig
     /// プレイヤー描画モード
     /// </summary>
     [JsonInclude]
-    public PlayerSurfaceMode PlayerSurfaceModeSelect = PlayerSurfaceMode.ScoreType2;
+    public PlayerSurfaceMode PlayerSurfaceModeSelect = PlayerSurfaceMode.Score;
 
     /// <summary>
     /// プレイヤー描画モード
@@ -229,7 +229,81 @@ public class ConfigPlayer : IConfig
 
     #endregion
 
+    #region 音階
+
+    /// <summary>
+    /// 音階リスト
+    /// </summary>
+    [JsonInclude]
+    public List<ConfigPlayerScaleItem> ScaleList =
+    [
+        new ( "DUMMY", "", true    ),
+        new ( "CY"   , "", false   ),
+        new ( "RD"   , "", true    ),
+        new ( "HH"   , "", false   ),
+        new ( "SD"   , "", false   ),
+        new ( "TM"   , "", false   ),
+      //new ( "HT"   , "", true    ),
+      //new ( "MT"   , "", false   ),
+      //new ( "LT"   , "", false   ),
+      //new ( "FT1"  , "", false   ),
+      //new ( "FT2"  , "", true    ),
+        new ( "BD"   , "", true    ),
+        new ( "PC"   , "", false   ),
+    ];
+
+    /// <summary>
+    /// 音階リスト更新
+    /// </summary>
+    public void UpdateScaleList( List<ConfigPlayerScaleItem> aScaleList )
+    {
+        lock ( ScaleList )
+        {
+            ScaleList.Clear();
+            aScaleList.ForEach( item => ScaleList.Add( new( item ) ) );
+        }
+    }
+
+    /// <summary>
+    /// 音階リストのインデックス番号取得
+    /// </summary>
+    /// <param name="aScaleKey">[音階キー] ( 例: "CY" )</param>
+    /// <param name="aScaleKeyText">[音階テキスト] ( 例: "1" )</param>
+    /// <returns>階リストのインデックス番号</returns>
+    public (int, string) GetScaleListIndex( string aScaleKey, string aScaleKeyText )
+    {
+        if ( aScaleKey.Length == 0 )
+        {
+            return ( -1, string.Empty );
+        }
+
+        var index = -1;
+
+        lock ( ScaleList )
+        {
+            foreach ( var item in ScaleList )
+            {
+                index++;
+
+                if ( item.ScaleKey.Equals( aScaleKey ) )
+                {
+                    return ( index, aScaleKeyText );
+                }
+            }
+        }
+
+        return ( -1, string.Empty );
+    }
+
+    #endregion
+
     #region 個別設定
+
+    /// <summary>
+    /// プレイヤー描画モード別設定
+    /// </summary>
+    [JsonInclude]
+    public ConfigPlayerScore Score { get; set; } = new();
 
     /// <summary>
     /// プレイヤー描画モード別設定
@@ -242,25 +316,6 @@ public class ConfigPlayer : IConfig
     /// </summary>
     [JsonInclude]
     public ConfigPlayerSimuration Simuration { get; set; } = new();
-
-    /// <summary>
-    /// プレイヤー描画モード別設定
-    /// </summary>
-    [JsonInclude]
-    public ConfigPlayerScoreType2 ScoreType2 { get; set; } = new();
-
-    /// <summary>
-    /// プレイヤー描画モード別設定
-    /// </summary>
-    [JsonInclude]
-    public bool ScoreType2DarkModeFlag { get; set; } = true;
-
-    ///// <summary>
-    ///// プレイヤー描画モード別設定
-    ///// </summary>
-    //[JsonIgnore]
-    //public ConfigPlayerScoreType2 ScoreType2SelectType 
-    //    => ScoreType2[ ScoreType2DarkModeFlag ];
 
     #endregion
 }

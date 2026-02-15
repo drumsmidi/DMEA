@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using DrumMidiEditorApp.pConfig;
 using DrumMidiEditorApp.pEvent;
@@ -32,6 +33,8 @@ public sealed partial class PageConfigPlayerSequence : Page, INotifyPropertyChan
 
         #region NumberBox の入力書式設定
 
+        _MeasureNoHeightSizeNumberBox.NumberFormatter
+            = HelperXaml.CreateNumberFormatter( 1, 1, 0.1 );
         _NoteTermHeightNumberBox.NumberFormatter
             = HelperXaml.CreateNumberFormatter( 1, 1, 0.1 );
         _NoteTermWidthNumberBox.NumberFormatter
@@ -81,15 +84,39 @@ public sealed partial class PageConfigPlayerSequence : Page, INotifyPropertyChan
         => PropertyChanged?.Invoke( this, new( aPropertyName ) );
 
     /// <summary>
-    /// Config再読み込み
-    /// 
-    /// x:Bind OneWay/TwoWay 再読み込み
+    /// ダークモード切り替え時の全プロパティ変更通知
     /// </summary>
-    public void ReloadConfig()
+    public void NotifyAllPropertiesUsingReflection()
     {
+        // NOTE: DarkMode切り替え時に、Bindingを再定義したいがWinUI3ではGetBindingExpression未実装？やり方が間違っている？
+        // x:bindでは更新するすべが現状ない？
+        // https://github.com/microsoft/microsoft-ui-xaml/issues/5473
+
         try
         {
-            OnPropertyChanged( "DrawSet" );
+            foreach ( var item2 in _SettingStackPanel.Children )
+            {
+                var prop = item2.GetType().GetProperty( "Name", BindingFlags.Public | BindingFlags.Instance );
+
+                var val = prop?.GetValue( item2 )?.ToString();
+
+                //Log.Info( $"{val}" );
+
+                if ( val != null && val.Length != 0 )
+                {
+                    if ( item2 is NumberBox num )
+                    {
+                        var bind = num.GetBindingExpression( NumberBox.ValueProperty );
+                        bind?.UpdateSource();
+                    }
+                    else if ( item2 is Button btn )
+                    {
+                        var bind = btn.GetBindingExpression( Button.BackgroundProperty );
+                        bind?.UpdateSource();
+                    }
+                    OnPropertyChanged( val );
+                }
+            }
         }
         catch ( Exception e )
         {
@@ -99,29 +126,14 @@ public sealed partial class PageConfigPlayerSequence : Page, INotifyPropertyChan
 
     #endregion
 
+    #region 描画設定
+
     /// <summary>
     /// 描画方向変更
     /// </summary>
     /// <param name="aSender"></param>
     /// <param name="aArgs"></param>
     private void DrawDirectionModeComboBox_SelectionChanged( object aSender, SelectionChangedEventArgs aArgs )
-    {
-        try
-        {
-            EventManage.Event_Player_UpdateScore();
-        }
-        catch ( Exception e )
-        {
-            Log.Error( e );
-        }
-    }
-
-    /// <summary>
-    /// 共通：トグル切替
-    /// </summary>
-    /// <param name="aSender"></param>
-    /// <param name="aArgs"></param>
-    private void ToggleSwitch_Toggled( object aSender, RoutedEventArgs aArgs )
     {
         try
         {
@@ -157,7 +169,24 @@ public sealed partial class PageConfigPlayerSequence : Page, INotifyPropertyChan
     }
 
     /// <summary>
-    /// 色選択
+    /// 共通：トグル切替
+    /// </summary>
+    /// <param name="aSender"></param>
+    /// <param name="aArgs"></param>
+    private void ToggleSwitch_Toggled( object aSender, RoutedEventArgs aArgs )
+    {
+        try
+        {
+            EventManage.Event_Player_UpdateScore();
+        }
+        catch ( Exception e )
+        {
+            Log.Error( e );
+        }
+    }
+
+    /// <summary>
+    /// 共通：色選択
     /// </summary>
     /// <param name="aSender"></param>
     /// <param name="aArgs"></param>
@@ -184,26 +213,5 @@ public sealed partial class PageConfigPlayerSequence : Page, INotifyPropertyChan
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="aSender"></param>
-    /// <param name="aArgs"></param>
-    private void HeaderGroupToggleSwitch_Toggled( object aSender, RoutedEventArgs aArgs )
-    {
-        try
-        {
-            if ( aSender is ToggleSwitch item )
-            {
-                DrawSet.HeaderGroupOn = item.IsOn;
-
-                ReloadConfig();
-                EventManage.Event_Player_UpdateScore();
-            }
-        }
-        catch ( Exception e )
-        {
-            Log.Error( e );
-        }
-    }
+    #endregion
 }

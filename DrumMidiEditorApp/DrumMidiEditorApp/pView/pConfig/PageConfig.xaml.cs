@@ -48,9 +48,9 @@ public sealed partial class PageConfig : Page
             ( "PageConfigVideo"     , typeof( PageConfigVideo               ) ),
             ( "PageConfigEditer"    , typeof( PageConfigEditer              ) ),
             ( "PageConfigPlayer"    , typeof( PageConfigPlayer              ) ),
-            ( "PageConfigPlayerA"   , typeof( PageConfigPlayerSequence      ) ),
-            ( "PageConfigPlayerD"   , typeof( PageConfigPlayerSimuration    ) ),
-            ( "PageConfigPlayerE"   , typeof( PageConfigPlayerScoreType2    ) ),
+            ( "PageConfigPlayerA"   , typeof( PageConfigPlayerScore         ) ),
+            ( "PageConfigPlayerB"   , typeof( PageConfigPlayerSequence      ) ),
+            ( "PageConfigPlayerC"   , typeof( PageConfigPlayerSimuration    ) ),
         ];
 
     /// <summary>

@@ -6,13 +6,14 @@ namespace DrumMidiEditorApp.pView.pPlayer.pSurface.pSequence;
 /// <summary>
 /// プレイヤー描画アイテム：ノート
 /// </summary>
-/// <param name="aNotePosX">１小節内のノート描画位置X座標</param>
+/// <param name="aX">描画位置＋１小節内での相対X座標</param>
+/// <param name="aY">描画位置＋１小節内での相対Y座標</param>
 /// <param name="aWidth">横幅</param>
 /// <param name="aHeight">高さ</param>
 /// <param name="aFormatRect">描画書式</param>
-/// <param name="aDmsItemMidiMap">MidiMap描画アイテム</param>
-internal partial class ItemNote( float aNotePosX, float aWidth, float aHeight, FormatRect aFormatRect, ItemMidiMap aDmsItemMidiMap ) 
-    : ItemBase( 0, aNotePosX, 0, aWidth, aHeight )
+/// <param name="aLabelText">ラベル</param>
+internal partial class ItemNote( float aX, float aY, float aWidth, float aHeight, FormatRect aFormatRect, string aLabelText ) 
+    : ItemBase( 0, aX, aY, aWidth, aHeight )
 {
     protected override void Dispose( bool aDisposing )
     {
@@ -24,8 +25,7 @@ internal partial class ItemNote( float aNotePosX, float aWidth, float aHeight, F
         // マネージドリソースの解放
         if ( aDisposing )
         {
-            _FormatRect     = null;
-            _DmsItemMidiMap = null;
+            _FormatRect = null;
         }
 
         // アンマネージドリソースの解放
@@ -40,19 +40,14 @@ internal partial class ItemNote( float aNotePosX, float aWidth, float aHeight, F
     #region member
 
     /// <summary>
-    /// １小節内のノート描画位置X座標
-    /// </summary>
-    private readonly float _NotePosX = aNotePosX;
-
-    /// <summary>
     /// 描画書式
     /// </summary>
     private FormatRect? _FormatRect = aFormatRect;
 
     /// <summary>
-    /// MidiMapヘッダアイテム
+    /// ラベルテキスト
     /// </summary>
-    private ItemMidiMap? _DmsItemMidiMap = aDmsItemMidiMap;
+    private readonly string _LabelText = aLabelText;
 
     #endregion
 
@@ -62,24 +57,42 @@ internal partial class ItemNote( float aNotePosX, float aWidth, float aHeight, F
     /// <param name="aGraphics">グラフィック</param>
     /// <param name="aDiffX">描画差分X</param>
     /// <param name="aDiffY">描画差分Y</param>
-    public void Draw( CanvasDrawingSession aGraphics, float aDiffX, float aDiffY )
+    public void Draw( CanvasDrawingSession aGraphics, float aDiffX, float aDiffY, bool aTextFlag )
     {
-        if ( _DmsItemMidiMap == null || _FormatRect == null )
+        if ( _FormatRect == null )
         {
             return;
         }
 
         var rect = DrawRect;
-        rect.X = _DmsItemMidiMap.DrawRect.Right + aDiffX + _NotePosX;
-        rect.Y = _DmsItemMidiMap.DrawRect.Top   + aDiffY + ( ( _DmsItemMidiMap.DrawRect.Height - rect.Height ) / 2.0F );
+        rect.X  += aDiffX;
+        rect.Y  += aDiffY;
 
-        // 背景色
-        aGraphics.FillRoundedRectangle
-            (
-                rect,
-                _FormatRect.RadiusX,
-                _FormatRect.RadiusY,
-                _FormatRect.Background.Color
-            );
+        // テキスト
+        if ( aTextFlag && _LabelText.Length != 0 )
+        {
+            aGraphics.DrawText
+                (
+                    _LabelText,
+                    rect._x - rect._width / 2F,
+                    rect._y - rect._height,
+                    rect._width,
+                    rect._height,
+                    _FormatRect.Background.Color,
+                    _FormatRect.Text.TextFormat
+                );
+        }
+        else
+        {
+            // 背景色
+            aGraphics.FillEllipse
+                (
+                    rect._x,
+                    rect._y - rect._height / 2.0f,
+                    rect._width,
+                    rect._height,
+                    _FormatRect.Background.Color
+                );
+        }
     }
 }

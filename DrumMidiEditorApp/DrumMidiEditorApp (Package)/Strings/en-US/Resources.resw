@@ -485,19 +485,13 @@ Display</value>
     <value>Player Settings : Common</value>
   </data>
   <data name="NaviConfigPlayerA.Text" xml:space="preserve">
-    <value>Player Settings : Sequence</value>
-  </data>
-  <data name="NaviConfigPlayerB.Text" xml:space="preserve">
-    <value>Player Settings : SequenceVertical</value>
-  </data>
-  <data name="NaviConfigPlayerC.Text" xml:space="preserve">
     <value>Player Settings : Score</value>
   </data>
-  <data name="NaviConfigPlayerD.Text" xml:space="preserve">
-    <value>Player Settings : Simuration</value>
+  <data name="NaviConfigPlayerB.Text" xml:space="preserve">
+    <value>Player Settings : Sequence</value>
   </data>
-  <data name="NaviConfigPlayerE.Text" xml:space="preserve">
-    <value>Player Settings : ScoreType2</value>
+  <data name="NaviConfigPlayerC.Text" xml:space="preserve">
+    <value>Player Settings : Simuration</value>
   </data>
   <data name="NaviConfigSystem.Text" xml:space="preserve">
     <value>System Settings</value>
@@ -562,9 +556,6 @@ Display</value>
   </data>
   <data name="InputBpmChange.Header" xml:space="preserve">
     <value>増減値</value>
-  </data>
-  <data name="InputDarkMode.Header" xml:space="preserve">
-    <value>DarkMode</value>
   </data>
   <data name="MenuItemExportPdf.Text" xml:space="preserve">
     <value>Pdf</value>

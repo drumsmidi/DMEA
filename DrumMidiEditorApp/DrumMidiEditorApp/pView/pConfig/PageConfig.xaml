@@ -23,9 +23,9 @@
                     <TextBlock Tag="PageConfigVideo"    x:Uid="NaviConfigVideo" />
                     <TextBlock Tag="PageConfigEditer"   x:Uid="NaviConfigEditer" />
                     <TextBlock Tag="PageConfigPlayer"   x:Uid="NaviConfigPlayer" />
-                    <TextBlock Tag="PageConfigPlayerE"  x:Uid="NaviConfigPlayerE" />
                     <TextBlock Tag="PageConfigPlayerA"  x:Uid="NaviConfigPlayerA" />
-                    <TextBlock Tag="PageConfigPlayerD"  x:Uid="NaviConfigPlayerD" />
+                    <TextBlock Tag="PageConfigPlayerB"  x:Uid="NaviConfigPlayerB" />
+                    <TextBlock Tag="PageConfigPlayerC"  x:Uid="NaviConfigPlayerC" />
                     
                 </ListView>
             </SplitView.Pane>

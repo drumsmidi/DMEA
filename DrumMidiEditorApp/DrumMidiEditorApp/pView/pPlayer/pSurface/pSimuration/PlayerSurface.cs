@@ -447,6 +447,7 @@ public class PlayerSurface : PlayerSurfaceBase
         #region Paint note
         {
             float diff_x;
+            byte  alpha;
 
             for ( var measure_no = measure_start; measure_no <= measure_end; measure_no++ )
             {
@@ -457,9 +458,11 @@ public class PlayerSurface : PlayerSurfaceBase
 
                 diff_x = ( measure_size * measure_no ) - sheet_pos_x;
 
+                alpha = (byte)( 255F * ( 1F - (float)( measure_no - measure_start ) / (float)( measure_end - measure_start + 1 ) ) );
+
                 foreach ( var note in notes )
                 {
-                    note.Draw( args.DrawingSession, diff_x );
+                    note.Draw( args.DrawingSession, diff_x, alpha );
                 }
             }
         }

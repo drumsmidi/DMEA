@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using DrumMidiEditorApp.pConfig;
 using DrumMidiLibrary.pAudio;
@@ -21,17 +20,12 @@ public class PlayerSurface : PlayerSurfaceBase
     /// <summary>
     /// プレイヤー設定
     /// </summary>
-    private ConfigPlayerSequence DrawSet => Config.Player.Sequence;
+    private static ConfigPlayerSequence DrawSet => Config.Player.Sequence;
 
     /// <summary>
-    /// BPM行ヘッダ範囲
+    /// セクション範囲
     /// </summary>
-	private Rect _BpmHeadRange = new();
-
-    /// <summary>
-    /// BPM行ボディ範囲
-    /// </summary>
-	private Rect _BpmBodyRange = new();
+	private Rect _SectionRange = new();
 
     /// <summary>
     /// 小節番号行ヘッダ範囲
@@ -54,34 +48,24 @@ public class PlayerSurface : PlayerSurfaceBase
     private Rect _ScoreBodyRange = new();
 
     /// <summary>
+    /// 現在のBPM表示範囲
+    /// </summary>
+	private Rect _NowBpmRange = new();
+
+    /// <summary>
     /// 小節分割線リスト
     /// </summary>
     private readonly List<ItemLine> _MeasureLineList = [];
 
     /// <summary>
-    /// MidiMapGroupヘッダリスト（MidiMapGroupキー、MidiMapGroup描画アイテム）
+    /// MidiMapGroupヘッダリスト（MidiMapGroupキー、横線描画アイテム）
     /// </summary>
-    private readonly Dictionary<int,ItemMidiMap> _HeaderGroupList = [];
-
-    /// <summary>
-    /// MidiMapヘッダリスト（MidiMapキー、MidiMap描画アイテム）
-    /// </summary>
-    private readonly Dictionary<int, ItemMidiMap> _HeaderMidiMapList = [];
-
-    /// <summary>
-    /// BPMリスト（小節番号、BPM描画アイテム）
-    /// </summary>
-    private readonly Dictionary<int,List<ItemBpm>> _BpmList = [];
+    private readonly Dictionary<string, ItemLine> _HeaderList = [];
 
     /// <summary>
     /// NOTEリスト（小節番号、NOTE描画アイテム）
     /// </summary>
     private readonly Dictionary<int,List<ItemNote>> _NoteList = [];
-
-    /// <summary>
-    /// NOTE-OFFリスト（NOTE描画アイテム、小節番号開始、終了）
-    /// </summary>
-    private readonly Dictionary<ItemNote, Point> _NoteOffList = [];
 
     /// <summary>
     /// ノート背景色リスト＜MidiMapKey、背景色＞
@@ -116,45 +100,34 @@ public class PlayerSurface : PlayerSurfaceBase
         {
             var s = _ScreenSize;
 
-            _ScreenSize.Height  = s.Width;
-            _ScreenSize.Width   = s.Height;
+            _ScreenSize.Height = s.Width;
+            _ScreenSize.Width  = s.Height;
         }
 
-        // bpm header
-        _BpmHeadRange.X         = 0;
-        _BpmHeadRange.Y         = 0;
-        _BpmHeadRange.Width     = DrawSet.HeaderTotalWidthSize;
-        _BpmHeadRange.Height    = DrawSet.BpmHeightSize;
 
-        // bpm body
-        _BpmBodyRange.X         = _BpmHeadRange.Right;
-        _BpmBodyRange.Y         = _BpmHeadRange.Top;
-        _BpmBodyRange.Width     = _ScreenSize.Width - _BpmHeadRange.Right;
-        _BpmBodyRange.Height    = _BpmHeadRange.Height;
-
-        // measure no header
-        _MeasureNoHeadRange.X       = 0;
-        _MeasureNoHeadRange.Y       = _BpmBodyRange.Bottom;
-        _MeasureNoHeadRange.Width   = DrawSet.HeaderTotalWidthSize;
-        _MeasureNoHeadRange.Height  = DrawSet.MeasureNoHeightSize;
+        // bpm
+        _NowBpmRange.X              = _ScreenSize.Width - 94;
+        _NowBpmRange.Y              = 0;
+        _NowBpmRange.Width          = DrawSet.BpmWidthSize;
+        _NowBpmRange.Height         = DrawSet.BpmHeightSize;
 
         // measure no body
-        _MeasureNoBodyRange.X       = _MeasureNoHeadRange.Right;
-        _MeasureNoBodyRange.Y       = _MeasureNoHeadRange.Top;
-        _MeasureNoBodyRange.Width   = _ScreenSize.Width - _MeasureNoHeadRange.Right;
-        _MeasureNoBodyRange.Height  = _MeasureNoHeadRange.Height;
-
-        // score header
-        _ScoreHeadRange.X       = 0;
-        _ScoreHeadRange.Y       = _MeasureNoBodyRange.Bottom;
-        _ScoreHeadRange.Width   = DrawSet.HeaderTotalWidthSize;
-        _ScoreHeadRange.Height  = DrawSet.ScoreMaxHeight;
+        _MeasureNoBodyRange.X       = DrawSet.HeaderWidthSize;
+        _MeasureNoBodyRange.Y       = _NowBpmRange.Bottom;
+        _MeasureNoBodyRange.Width   = (int)( ( _ScreenSize.Width - DrawSet.HeaderWidthSize ) / DrawSet.MeasureSize ) * DrawSet.MeasureSize;
+        _MeasureNoBodyRange.Height  = DrawSet.MeasureNoHeightSize;
 
         // score body
-        _ScoreBodyRange.X       = _ScoreHeadRange.Right;
-        _ScoreBodyRange.Y       = _ScoreHeadRange.Top;
-        _ScoreBodyRange.Width   = _ScreenSize.Width - _ScoreHeadRange.Right;
-        _ScoreBodyRange.Height  = _ScoreHeadRange.Height;
+        _ScoreBodyRange.X           = _MeasureNoBodyRange.Left;
+        _ScoreBodyRange.Y           = _MeasureNoBodyRange.Bottom;
+        _ScoreBodyRange.Width       = _MeasureNoBodyRange.Width;
+        _ScoreBodyRange.Height      = DrawSet.ScoreMaxHeight;
+
+        // 1小節分の範囲
+        _SectionRange.X             = _MeasureNoBodyRange.X;
+        _SectionRange.Y             = _MeasureNoBodyRange.Y;
+        _SectionRange.Width         = _ScoreBodyRange.Width;
+        _SectionRange.Height        = _ScoreBodyRange.Bottom - _MeasureNoBodyRange.Top;
     }
 
     protected override void UpdateScoreLine()
@@ -221,12 +194,12 @@ public class PlayerSurface : PlayerSurfaceBase
                         (
                             new
                             (
-                                (float)( body.X + ( note_width * i ) - ( pen.LineSize / 2F ) ),
+                                (float)( body.X + ( note_width * i ) ),
                                 body._y,
                                 0,
                                 body._height,
                                 pen
-                            )
+                             )
                         );
 
                     pen = null;
@@ -253,94 +226,62 @@ public class PlayerSurface : PlayerSurfaceBase
     {
         base.UpdateScoreHeader();
 
-        _HeaderGroupList.Clear();
-        _HeaderMidiMapList.Clear();
+        _HeaderList.Clear();
 
-        var head = _ScoreHeadRange;
+        var body = _ScoreBodyRange;
 
-        var x = head.X;
-        var y = head.Y;
-        var w = DrawSet.HeaderGroupOn ? head.Width : DrawSet.HeaderGroupWidthSize ;
-        var h = DrawSet.HeaderGroupOn ? DrawSet.NoteTermHeightSize : 0 ;
+        var x = body.X;
+        var y = body.Y;
+        var w = body.Width;
+        var h = DrawSet.NoteTermHeightSize;
 
         #region MidiMapGroup
+        lock ( DrawSet.ScaleList )
         {
-            var index = 0;
+            var cnt = 0;
 
-            foreach ( var group in Score.EditMidiMapSet.DisplayMidiMapGroups )
+            foreach ( var item in DrawSet.ScaleList )
             {
-                if ( !DrawSet.HeaderGroupOn )
+                if ( item != null )
                 {
-                    h = DrawSet.NoteTermHeightSize * Score.EditMidiMapSet.DisplayMidiMapCountByGroup [ index ];
-
-                    index++;
-                }
-
-                if ( group != null )
-                {
-                    var obj = new ItemMidiMap
+                    var obj = new ItemLine
                         (
-                            group,
                             (float)x,
                             (float)y,
                             (float)w,
-                            (float)h,
-                            DrawSet.HeaderRect
+                            0,
+                            item.LineDrawFlag ? DrawSet.HeaderLineA : DrawSet.HeaderLineB
                         );
 
-                    _HeaderGroupList.Add( group.GroupKey, obj );
+                    _HeaderList.TryAdd( item.ScaleKey, obj );
                 }
 
                 y += h;
+                cnt++;
             }
         }
         #endregion
 
         #region MidiMap
         {
-            x = head.X + w;
-            y = head.Y;
-            w = DrawSet.HeaderWidthSize;
-            h = DrawSet.NoteTermHeightSize;
-
             foreach ( var midiMap in Score.EditMidiMapSet.DisplayMidiMaps )
             {
-                if ( midiMap != null )
+                // ノート描画用の書式を登録
+                if ( !_MidiMapNoteFormatList.TryGetValue( midiMap.MidiMapKey, out var value ) )
                 {
-                    // ノート描画用の書式を登録
-                    if ( !_MidiMapNoteFormatList.TryGetValue( midiMap.MidiMapKey, out var value ) )
+                    // TODO: 線の色とか情報追加が必要
+                    var formatRect = new FormatRect
                     {
-                        // TODO: 線の色とか情報追加が必要
-                        var formatRect = new FormatRect
-                        {
-                            Background = new( midiMap.Color )
-                        };
+                        Background  = new( midiMap.Color ),
+                        Text        = DrawSet.NoteRect.Text,
+                    };
 
-                        _MidiMapNoteFormatList.Add( midiMap.MidiMapKey, formatRect );
-                    }
-                    else
-                    {
-                        value.Background = new( midiMap.Color );
-                    }
-
-                    if ( !DrawSet.HeaderGroupOn )
-                    {
-                        // アイテム登録
-                        var obj = new ItemMidiMap
-                            (
-                                midiMap,
-                                (float)x,
-                                (float)y,
-                                (float)w,
-                                (float)h,
-                                DrawSet.HeaderRect
-                            );
-
-                        _HeaderMidiMapList.Add( midiMap.MidiMapKey, obj );
-                    }
+                    _MidiMapNoteFormatList.Add( midiMap.MidiMapKey, formatRect );
                 }
-
-                y += h;
+                else
+                {
+                    value.Background = new( midiMap.Color );
+                }
             }
         }
         #endregion
@@ -349,10 +290,10 @@ public class PlayerSurface : PlayerSurfaceBase
         {
             _NowBpm = new ItemLabel
                 (
-                    _BpmHeadRange._x,
-                    _BpmHeadRange._y,
-                    _BpmHeadRange._width,
-                    _BpmHeadRange._height,
+                    _NowBpmRange._x,
+                    _NowBpmRange._y,
+                    _NowBpmRange._width,
+                    _NowBpmRange._height,
                     string.Empty,
                     DrawSet.BpmNowRect
                 );
@@ -369,28 +310,16 @@ public class PlayerSurface : PlayerSurfaceBase
             nList.Value.Clear();
         }
         _NoteList.Clear();
-        _NoteOffList.Clear();
-
-        foreach ( var nList in _BpmList )
-        {
-            nList.Value.Clear();
-        }
-        _BpmList.Clear();
     }
 
     protected override void UpdateScoreMeasure( int aMeasureNo )
     {
-        base.UpdateScoreMeasure( aMeasureNo  );
+        base.UpdateScoreMeasure( aMeasureNo );
 
         #region Clear note
         {
             if ( _NoteList.TryGetValue( aMeasureNo, out var nList ) )
             {
-                foreach ( var item in nList )
-                {
-                    _ = _NoteOffList.Remove( item );
-                }
-
                 nList.Clear();
                 _ = _NoteList.Remove( aMeasureNo );
             }
@@ -404,6 +333,7 @@ public class PlayerSurface : PlayerSurfaceBase
             return;
         }
 
+        var body_s    = _ScoreBodyRange;
         var note_rect = new Rect( 0, 0, DrawSet.NoteWidthSize, DrawSet.NoteHeightSize );
 
         #region Set note
@@ -420,8 +350,12 @@ public class PlayerSurface : PlayerSurfaceBase
                     continue;
                 }
 
-                var idx = DrawSet.HeaderGroupOn ? Score.EditMidiMapSet.GetDisplayMidiMapGroupIndex( midiMap.Group.GroupKey )
-                                                : Score.EditMidiMapSet.GetDisplayMidiMapIndex( midiMap.MidiMapKey ) ;
+                var item = DrawSet.GetScaleListIndex( midiMap.Group.ScaleKey, midiMap.ScaleKeyText );
+
+                if ( item.Item1 == -1 )
+                {
+                    continue;
+                }
 
                 foreach ( var info in measure_line.InfoStates.Values )
                 {
@@ -451,6 +385,9 @@ public class PlayerSurface : PlayerSurfaceBase
 
                     note_rect.Width     = DrawSet.NoteWidthSize  * volume;
                     note_rect.Height    = DrawSet.NoteHeightSize * volume;
+                    note_rect.X         = body_s.X + ( info.NotePos * DrawSet.NoteTermWidthSize ); //- ( volume * DrawSet.NoteWidthSize / 2.0F );
+                    note_rect.Y         = body_s.Y + ( item.Item1 * DrawSet.NoteTermHeightSize ) 
+                                        + ( ( DrawSet.NoteTermHeightSize - note_rect.Height ) / 2.0F );
 
                     if ( volume != 0F )
                     {
@@ -464,23 +401,17 @@ public class PlayerSurface : PlayerSurfaceBase
                         }
                     }
 
-                    var distanceToNextNoteOff       = Score.EditChannel.GetNotePosDistanceToNextNoteOff( info );
-                    var distanceToNextNoteOffWidth  = distanceToNextNoteOff * DrawSet.NoteTermWidthSize;
-
-                    note_rect.X                     = ( info.NotePos * DrawSet.NoteTermWidthSize ) - ( note_rect.Width / 2.0F );
-                    note_rect.Width                += distanceToNextNoteOffWidth;
-
                     var obj = new ItemNote
                         (
                             note_rect._x,
+                            note_rect._y,
                             note_rect._width,
                             note_rect._height,
+                            //DrawSet.NoteRect,
                             _MidiMapNoteFormatList[ midiMap.MidiMapKey ],
-                            DrawSet.HeaderGroupOn ? _HeaderGroupList[ midiMap.Group.GroupKey ]
-                                                  : _HeaderMidiMapList[ midiMap.MidiMapKey ]
+                            item.Item2
                         );
 
-                    // NoteOn描画補助
                     if ( !_NoteList.TryGetValue( aMeasureNo, out var lst ) )
                     {
                         lst = [];
@@ -488,14 +419,6 @@ public class PlayerSurface : PlayerSurfaceBase
                     lst.Add( obj );
 
                     _NoteList [ aMeasureNo ] = lst;
-
-                    // NoteOff描画補助
-                    var measureMax = ( info.NotePos + distanceToNextNoteOff ) / ConfigSystem.MeasureNoteNumber;
-
-                    if ( aMeasureNo < measureMax )
-                    {
-                        _NoteOffList [ obj ] = new( aMeasureNo, measureMax );
-                    }
                 }
             }
         }
@@ -504,74 +427,6 @@ public class PlayerSurface : PlayerSurfaceBase
         #region Sort note
         {
             if ( _NoteList.TryGetValue( aMeasureNo, out var lst ) )
-            {
-                lst.Sort();
-            }
-        }
-        #endregion
-    }
-
-    protected override void UpdateBpmMeasure( int aMeasureNo )
-    {
-        base.UpdateBpmMeasure( aMeasureNo );
-
-        #region Clear
-        {
-            if ( _BpmList.TryGetValue( aMeasureNo, out var nList ) )
-            {
-                nList.Clear();
-                _ = _BpmList.Remove( aMeasureNo );
-            }
-        }
-        #endregion
-
-        var body      = _BpmBodyRange;
-        var note_rect = new Rect( body.X, body.Y, DrawSet.BpmWidthSize, DrawSet.BpmHeightSize );
-
-        #region Set bpm
-        {
-            var measure = Score.SysChannel.GetMeasure( aMeasureNo );
-
-            if ( measure == null )
-            {
-                return;
-            }
-
-            var bpm_line = measure.BpmLine;
-
-            if ( bpm_line == null )
-            {
-                return;
-            }
-
-            foreach ( var info in bpm_line.InfoStates.Values )
-            {
-                note_rect.X = body.X + ( info.NotePos * DrawSet.NoteTermWidthSize );
-
-                var obj = new ItemBpm
-                    (
-                        note_rect._x,
-                        note_rect._y,
-                        note_rect._width,
-                        note_rect._height,
-                        info,
-                        DrawSet.BpmRect
-                    );
-
-                if ( !_BpmList.TryGetValue( aMeasureNo, out var lst ) )
-                {
-                    lst = [];
-                }
-                lst.Add( obj );
-
-                _BpmList [ aMeasureNo ] = lst;
-            }
-        }
-        #endregion
-
-        #region Sort
-        {
-            if ( _BpmList.TryGetValue( aMeasureNo, out var lst ) )
             {
                 lst.Sort();
             }
@@ -597,6 +452,15 @@ public class PlayerSurface : PlayerSurfaceBase
                 Matrix3x2.CreateRotation( (float)( Math.PI * -90 / 180.0 ) ) *
                 Matrix3x2.CreateTranslation( 0, _ScreenSize._width - _ScreenSize._height );
         }
+
+        //var section = _SectionRange;
+
+        //if ( section.Width <= 0 || section.Height <= 0 )
+        //{
+        //    return true;
+        //}
+
+        var note_text_flag  = DrawSet.NoteTextOn;
 
         var head            = _ScoreHeadRange;
         var body            = _ScoreBodyRange;
@@ -639,75 +503,16 @@ public class PlayerSurface : PlayerSurfaceBase
 
             for ( var measure_no = measure_start; measure_no <= measure_end; measure_no++ )
             {
-                if ( !_NoteList.TryGetValue( measure_no, out var notes ) )
+                if ( _NoteList.TryGetValue( measure_no, out var notes ) )
                 {
-                    continue;
-                }
-
-                diff_x = ( measure_size * measure_no ) - sheet_pos_x;
-
-                foreach ( var note in notes )
-                {
-                    note.Draw( args.DrawingSession, diff_x, 0 );
-                }
-            }
-
-            // 描画範囲外のノート描画
-            foreach ( var item in _NoteOffList.Where( c => c.Value.X < measure_start && measure_start <= c.Value.Y ) )
-            {
-                diff_x = (float)( ( measure_size * item.Value.X ) - sheet_pos_x );
-
-                item.Key.Draw( args.DrawingSession, diff_x, 0 );
-            }
-        }
-        #endregion
-
-        #region Paint header of MidiMapGroup / MidiMap
-        {
-            foreach ( var obj in _HeaderGroupList.Values )
-            {
-                obj.Draw( args.DrawingSession );
-            }
-
-            foreach ( var obj in _HeaderMidiMapList.Values )
-            {
-                obj.Draw( args.DrawingSession );
-            }
-        }
-        #endregion
-
-        #region Paint bpm
-        {
-            #region Paint body
-            {
-                float diff_x;
-
-                for ( var measure_no = measure_start; measure_no <= measure_end; measure_no++ )
-                {
-                    if ( !_BpmList.TryGetValue( measure_no, out var bpms ) )
-                    {
-                        continue;
-                    }
-
                     diff_x = ( measure_size * measure_no ) - sheet_pos_x;
 
-                    foreach ( var bpm in bpms )
+                    foreach ( var note in notes )
                     {
-                        bpm.Draw( args.DrawingSession, diff_x, 0 );
+                        note.Draw( args.DrawingSession, diff_x, 0, note_text_flag );
                     }
                 }
             }
-            #endregion
-
-            #region Paint bpm now
-            {
-                if ( DrawSet.BpmNowDisplay && _NowBpm != null )
-                {
-                    _NowBpm.Text = string.Format( "[Bpm:{0, 6:##0.00}]", DmsControl.GetBpm( _NotePositionX ) );
-                    _NowBpm.Draw( args.DrawingSession );
-                }
-            }
-            #endregion
         }
         #endregion
 
@@ -725,6 +530,16 @@ public class PlayerSurface : PlayerSurfaceBase
                 }
             }
             #endregion
+        }
+        #endregion
+
+        #region Paint now bpm
+        {
+            if ( DrawSet.BpmNowDisplay && _NowBpm != null )
+            {
+                _NowBpm.Text = string.Format( "Bpm:{0, 6:##0.00}", DmsControl.GetBpm( _NotePositionX ) );
+                _NowBpm.Draw( args.DrawingSession );
+            }
         }
         #endregion
 

@@ -1,7 +1,7 @@
 ﻿using DrumMidiLibrary.pUtil;
 using Microsoft.Graphics.Canvas;
 
-namespace DrumMidiEditorApp.pView.pPlayer.pSurface.pScoreType2;
+namespace DrumMidiEditorApp.pView.pPlayer.pSurface.pScore;
 
 /// <summary>
 /// プレイヤー描画アイテム：ノート

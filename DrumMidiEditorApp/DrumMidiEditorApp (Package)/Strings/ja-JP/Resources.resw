@@ -485,19 +485,13 @@ BPMノートを含める</value>
     <value>プレイヤー共通設定</value>
   </data>
   <data name="NaviConfigPlayerA.Text" xml:space="preserve">
-    <value>プレイヤー個別設定：Sequence</value>
-  </data>
-  <data name="NaviConfigPlayerB.Text" xml:space="preserve">
-    <value>プレイヤー個別設定：SequenceVertical</value>
-  </data>
-  <data name="NaviConfigPlayerC.Text" xml:space="preserve">
     <value>プレイヤー個別設定：Score</value>
   </data>
-  <data name="NaviConfigPlayerD.Text" xml:space="preserve">
-    <value>プレイヤー個別設定：Simuration</value>
+  <data name="NaviConfigPlayerB.Text" xml:space="preserve">
+    <value>プレイヤー個別設定：Sequence</value>
   </data>
-  <data name="NaviConfigPlayerE.Text" xml:space="preserve">
-    <value>プレイヤー個別設定：ScoreType2</value>
+  <data name="NaviConfigPlayerC.Text" xml:space="preserve">
+    <value>プレイヤー個別設定：Simuration</value>
   </data>
   <data name="NaviConfigSystem.Text" xml:space="preserve">
     <value>システム設定</value>
@@ -562,9 +556,6 @@ BPMノートを含める</value>
   </data>
   <data name="InputBpmChange.Header" xml:space="preserve">
     <value>増減値</value>
-  </data>
-  <data name="InputDarkMode.Header" xml:space="preserve">
-    <value>DarkMode</value>
   </data>
   <data name="MenuItemExportPdf.Text" xml:space="preserve">
     <value>Pdf</value>

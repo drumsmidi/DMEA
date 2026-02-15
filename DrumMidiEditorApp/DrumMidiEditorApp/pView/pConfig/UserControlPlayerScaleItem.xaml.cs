@@ -12,12 +12,12 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace DrumMidiEditorApp.pView.pConfig;
 
-public sealed partial class UserControlPlayerScoreType2ScaleItem : UserControl
+public sealed partial class UserControlPlayerScaleItem : UserControl
 {
     /// <summary>
     /// コンストラクタ
     /// </summary>
-    public UserControlPlayerScoreType2ScaleItem()
+    public UserControlPlayerScaleItem()
     {
         InitializeComponent();
 
@@ -30,12 +30,12 @@ public sealed partial class UserControlPlayerScoreType2ScaleItem : UserControl
     /// <summary>
     /// 描画設定
     /// </summary>
-    private ConfigPlayerScoreType2 DrawSet => Config.Player.ScoreType2;
+    private ConfigPlayer DrawSet => Config.Player;
 
     /// <summary>
     /// 編集中のScaleItemリスト
     /// </summary>
-    private readonly ObservableCollection<ConfigPlayerScoreType2ScaleItem> _TmpScaleItemList = [];
+    private readonly ObservableCollection<ConfigPlayerScaleItem> _TmpScaleItemList = [];
 
     #endregion
 
@@ -79,7 +79,7 @@ public sealed partial class UserControlPlayerScoreType2ScaleItem : UserControl
     {
         try
         {
-            List<ConfigPlayerScoreType2ScaleItem> itemList = [];
+            List<ConfigPlayerScaleItem> itemList = [];
 
             foreach ( var item in _TmpScaleItemList )
             {
@@ -122,7 +122,7 @@ public sealed partial class UserControlPlayerScoreType2ScaleItem : UserControl
     {
         try
         {
-            if ( _ScaleItemGridView.SelectedItem is not ConfigPlayerScoreType2ScaleItem item )
+            if ( _ScaleItemGridView.SelectedItem is not ConfigPlayerScaleItem item )
             {
                 return;
             }
@@ -144,7 +144,7 @@ public sealed partial class UserControlPlayerScoreType2ScaleItem : UserControl
     {
         try
         {
-            if ( aArgs.Items.Count != 1 || aArgs.Items [ 0 ] is not ConfigPlayerScoreType2ScaleItem item )
+            if ( aArgs.Items.Count != 1 || aArgs.Items [ 0 ] is not ConfigPlayerScaleItem item )
             {
                 return;
             }
@@ -170,7 +170,7 @@ public sealed partial class UserControlPlayerScoreType2ScaleItem : UserControl
             {
                 case DataPackageOperation.Move:
                     {
-                        if ( aArgs.Items.Count != 1 || aArgs.Items [ 0 ] is not ConfigPlayerScoreType2ScaleItem item )
+                        if ( aArgs.Items.Count != 1 || aArgs.Items [ 0 ] is not ConfigPlayerScaleItem item )
                         {
                             return;
                         }

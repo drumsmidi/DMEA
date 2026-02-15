@@ -31,10 +31,8 @@
     <None Remove="pView\pConfig\PageConfigDevice.xaml" />
     <None Remove="pView\pConfig\PageConfigEditer.xaml" />
     <None Remove="pView\pConfig\PageConfigPlayer.xaml" />
-    <None Remove="pView\pConfig\PageConfigPlayerSequence.xaml" />
     <None Remove="pView\pConfig\PageConfigPlayerSimuration.xaml" />
     <None Remove="pView\pConfig\PageConfigVideo.xaml" />
-    <None Remove="pView\pConfig\UserControlPlayerScoreType2ScaleItem.xaml" />
     <None Remove="pView\pDebug\PageDebug.xaml" />
     <None Remove="pView\pDebug\PageDebugShell.xaml" />
     <None Remove="pView\pEditer\PageInputBpm.xaml" />
@@ -54,7 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="pView\pConfig\UserControlPlayerScoreType2ScaleItem.xaml">
+    <Page Update="pView\pConfig\PageConfigPlayerSequence.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="pView\pConfig\UserControlPlayerScaleItem.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -74,16 +75,12 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="pView\pConfig\PageConfigPlayerScoreType2.xaml">
+    <Page Update="pView\pConfig\PageConfigPlayerScore.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="pView\pConfig\PageConfigPlayerSimuration.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="pView\pConfig\PageConfigPlayerSequence.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

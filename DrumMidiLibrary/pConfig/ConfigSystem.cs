@@ -261,12 +261,12 @@ public class ConfigSystem : IConfig
     /// </summary>
     public enum PlayerSurfaceMode : int
     {
-        /// <summary>シーケンスモード</summary>
-        Sequence = 0,
         /// <summary>シミュレーションモード</summary>
-        Simuration,
+        Simuration = 0,
         /// <summary>スコアモード</summary>
-        ScoreType2,
+        Score,
+        /// <summary>シーケンスモード</summary>
+        Sequence,
     }
 
     #endregion

@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using DrumMidiEditorApp.pConfig;
 using DrumMidiLibrary.pAudio;
-using DrumMidiLibrary.pConfig;
 using DrumMidiLibrary.pControl;
-using DrumMidiLibrary.pModel.pScore;
 using DrumMidiLibrary.pUtil;
-using DrumMidiPlayerApp.pConfig;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.Foundation;
 
-namespace DrumMidiPlayerApp.pView.pScreen.pPlayer;
+namespace DrumMidiEditorApp.pView.pPlayer.pSurface.pScore;
 
 /// <summary>
-/// スクリーン：プレイヤー
+/// プレイヤーサーフェイス
 /// </summary>
-public class ScreenPlayer() : ScreenPlayerBase()
+public class PlayerSurface : PlayerSurfaceBase
 {
-    #region Screen情報
+    #region Member
 
     /// <summary>
     /// プレイヤー設定
     /// </summary>
-    private static ConfigPlayerScoreType2 DrawSet => Config.Player.ScoreType2;
+    private static ConfigPlayerScore DrawSet => Config.Player.Score;
 
     /// <summary>
     /// セクション範囲
@@ -80,22 +78,27 @@ public class ScreenPlayer() : ScreenPlayerBase()
 
     #endregion
 
-    #region Frame処理
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    public PlayerSurface() : base() { }
+
+    public override bool OnMove( double aFrameTime ) => base.OnMove( aFrameTime );
 
     protected override void UpdateScore()
     {
         base.UpdateScore();
 
         // bpm
-        _NowBpmRange.X              = ScreenDrawRect.Width - 94;
-        _NowBpmRange.Y              = ScreenDrawRect.Y;
+        _NowBpmRange.X              = _ScreenSize.Width - 94;
+        _NowBpmRange.Y              = 0;
         _NowBpmRange.Width          = DrawSet.BpmWidthSize;
         _NowBpmRange.Height         = DrawSet.BpmHeightSize;
 
         // measure no body
-        _MeasureNoBodyRange.X       = ScreenDrawRect.X + 20;
+        _MeasureNoBodyRange.X       = 20;
         _MeasureNoBodyRange.Y       = _NowBpmRange.Bottom;
-        _MeasureNoBodyRange.Width   = (int)( ( ScreenDrawRect.Width - 40 ) / DrawSet.MeasureSize ) * DrawSet.MeasureSize;
+        _MeasureNoBodyRange.Width   = (int)( ( _ScreenSize.Width - 40 ) / DrawSet.MeasureSize ) * DrawSet.MeasureSize;
         _MeasureNoBodyRange.Height  = DrawSet.MeasureNoHeightSize;
 
         // score body
@@ -232,11 +235,11 @@ public class ScreenPlayer() : ScreenPlayerBase()
         var h = DrawSet.NoteTermHeightSize;
 
         #region MidiMapGroup
-        lock ( DrawSet.ScaleList )
+        lock ( DrawSetCom.ScaleList )
         {
             var cnt = 0;
 
-            foreach ( var item in DrawSet.ScaleList )
+            foreach ( var item in DrawSetCom.ScaleList )
             {
                 if ( item != null )
                 {
@@ -346,7 +349,7 @@ public class ScreenPlayer() : ScreenPlayerBase()
                     continue;
                 }
 
-                var item = DrawSet.GetScaleListIndex( midiMap.Group.ScaleKey, midiMap.ScaleKeyText );
+                var item = DrawSetCom.GetScaleListIndex( midiMap.Group.ScaleKey, midiMap.ScaleKeyText );
 
                 if ( item.Item1 == -1 )
                 {
@@ -382,7 +385,7 @@ public class ScreenPlayer() : ScreenPlayerBase()
                     note_rect.Width     = DrawSet.NoteWidthSize  * volume;
                     note_rect.Height    = DrawSet.NoteHeightSize * volume;
                     note_rect.X         = body_s.X + ( info.NotePos * DrawSet.NoteTermWidthSize ); //- ( volume * DrawSet.NoteWidthSize / 2.0F );
-                    note_rect.Y         = body_s.Y + ( item.Item1   * DrawSet.NoteTermHeightSize )
+                    note_rect.Y         = body_s.Y + ( item.Item1 * DrawSet.NoteTermHeightSize ) 
                                         + ( ( DrawSet.NoteTermHeightSize - note_rect.Height ) / 2.0F );
 
                     if ( volume != 0F )
@@ -430,56 +433,34 @@ public class ScreenPlayer() : ScreenPlayerBase()
         #endregion
     }
 
-    #endregion
-
-    #region 描画処理
-
-    protected override bool OnDrawSelf( CanvasDrawEventArgs aArgs )
+    public override bool OnDraw( CanvasDrawEventArgs args )
     {
-        if ( !base.OnDrawSelf( aArgs ) )
+        // 背景色
+        args.DrawingSession.Clear( DrawSet.SheetColor.Color );
+
+        if ( !base.OnDraw( args ) )
         {
             return false;
         }
-
-        switch ( State )
-        {
-            case States.Playing:
-                {
-                    OnDrawPlaying( aArgs );
-                }
-                break;
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// 描画処理：再生中
-    /// </summary>
-    /// <param name="aArgs"></param>
-    /// <returns></returns>
-    private void OnDrawPlaying( CanvasDrawEventArgs aArgs )
-    {
-        // 背景色
-        aArgs.DrawingSession.Clear( DrawSet.SheetColor.Color );
 
         var section = _SectionRange;
 
         if ( section.Width <= 0 || section.Height <= 0 )
         {
-            return;
+            return true;
         }
 
         var note_text_flag  = DrawSet.NoteTextOn;
 
         var body            = _ScoreBodyRange;
-        var note_pos        = NotePositionX;
+        var note_pos        = _NotePositionX;
         var measure_size    = DrawSet.MeasureSize;
         var measure_x       = (int)( body.Width / measure_size );
-        var measure_y       = (int)( ( ScreenDrawRect.Height - section.Top ) / section.Height );
+        var measure_y       = (int)( ( _ScreenSize.Height - section.Top ) / section.Height );
 
         if ( measure_x <= 0 || measure_y <= 0 )
         {
-            return;
+            return true;
         }
 
         var measure_no_now = (int)( note_pos / ConfigSystem.MeasureNoteNumber );
@@ -497,13 +478,13 @@ public class ScreenPlayer() : ScreenPlayerBase()
 
         #region Paint section
         {
-            int   cnt;
-            float diff_x;
-            float diff_y;
+            int     cnt;
+            float   diff_x;
+            float   diff_y;
 
             for ( var measure_no = measure_start; measure_no <= measure_end; measure_no++ )
             {
-                diff_x = measure_size    * ( measure_no % measure_x );
+                diff_x = measure_size * ( measure_no % measure_x );
                 diff_y = section._height * ( measure_no / measure_x % measure_y );
 
                 #region Paint measure line
@@ -512,12 +493,12 @@ public class ScreenPlayer() : ScreenPlayerBase()
 
                     for ( var index = 0; index < cnt; index++ )
                     {
-                        _MeasureLineList [ index ].Draw( aArgs.DrawingSession, diff_x, diff_y );
+                        _MeasureLineList [ index ].Draw( args.DrawingSession, diff_x, diff_y );
                     }
 
                     if ( ( measure_no + 1 ) % measure_x == 0 )
                     {
-                        _MeasureLineList [ 0 ].Draw( aArgs.DrawingSession, diff_x + measure_size, diff_y );
+                        _MeasureLineList [ 0 ].Draw( args.DrawingSession, diff_x + measure_size, diff_y );
                     }
                 }
                 #endregion
@@ -528,7 +509,7 @@ public class ScreenPlayer() : ScreenPlayerBase()
                 {
                     foreach ( var obj in _HeaderList.Values )
                     {
-                        obj.Draw( aArgs.DrawingSession, diff_x, diff_y );
+                        obj.Draw( args.DrawingSession, diff_x, diff_y );
                     }
                 }
 
@@ -537,10 +518,10 @@ public class ScreenPlayer() : ScreenPlayerBase()
                 #region Paint measure number
                 {
                     _MeasureNo?.Draw
-                        (
-                            aArgs.DrawingSession,
-                            measure_no,
-                            diff_x,
+                        ( 
+                            args.DrawingSession, 
+                            measure_no, 
+                            diff_x, 
                             diff_y,
                             measure_no_now - measure_no_now % measure_x == measure_no - measure_no % measure_x
                         );
@@ -553,7 +534,7 @@ public class ScreenPlayer() : ScreenPlayerBase()
                     {
                         foreach ( var note in notes )
                         {
-                            note.Draw( aArgs.DrawingSession, diff_x, diff_y, note_text_flag );
+                            note.Draw( args.DrawingSession, diff_x, diff_y, note_text_flag );
                         }
                     }
                 }
@@ -564,21 +545,21 @@ public class ScreenPlayer() : ScreenPlayerBase()
 
         #region Cursol
         {
-            float diff_x;
-            float diff_y;
-            float div_x;
+            float   diff_x;
+            float   diff_y;
+            float   div_x;
 
-            var cur_measure_no = (int)( SheetPosX / ConfigSystem.MeasureNoteNumber );
+            var cur_measure_no  = (int)( _SheetPosX / ConfigSystem.MeasureNoteNumber );
 
             for ( var measure_no = measure_start; measure_no <= cur_measure_no; measure_no++ )
             {
-                diff_x = measure_size    * ( measure_no % measure_x );
-                diff_y = section._height * ( measure_no / measure_x % measure_y );
-                div_x  = ( measure_no == cur_measure_no )
-                            ? SheetPosX % ConfigSystem.MeasureNoteNumber * DrawSet.NoteTermWidthSize
-                            : measure_size;
+                diff_x  = measure_size * ( measure_no % measure_x );
+                diff_y  = section._height * ( measure_no / measure_x % measure_y );
+                div_x   = ( measure_no == cur_measure_no )
+                            ? _SheetPosX % ConfigSystem.MeasureNoteNumber * DrawSet.NoteTermWidthSize
+                            : measure_size ;
 
-                _NowPosition?.Draw( aArgs.DrawingSession, diff_x, diff_y, div_x, measure_no == cur_measure_no );
+                _NowPosition?.Draw( args.DrawingSession, diff_x, diff_y, div_x, measure_no == cur_measure_no );
             }
         }
         #endregion
@@ -587,12 +568,34 @@ public class ScreenPlayer() : ScreenPlayerBase()
         {
             if ( DrawSet.BpmNowDisplay && _NowBpm != null )
             {
-                _NowBpm.Text = string.Format( "Bpm:{0, 6:##0.00}", DmsControl.GetBpm( NotePositionX ) );
-                _NowBpm.Draw( aArgs.DrawingSession );
+                _NowBpm.Text = string.Format( "Bpm:{0, 6:##0.00}", DmsControl.GetBpm( _NotePositionX ) );
+                _NowBpm.Draw( args.DrawingSession );
             }
         }
         #endregion
+
+        return true;
     }
 
-    #endregion
+    public override int GetNumberOfMeasureNoPerPage()
+    {
+        var section = _SectionRange;
+
+        if ( section.Width <= 0 || section.Height <= 0 )
+        {
+            return 0;
+        }
+
+        var body            = _ScoreBodyRange;
+        var measure_size    = DrawSet.MeasureSize;
+        var measure_x       = (int)( body.Width / measure_size );
+        var measure_y       = (int)( ( _ScreenSize.Height - section.Top ) / section.Height );
+
+        if ( measure_x <= 0 || measure_y <= 0 )
+        {
+            return 0;
+        }
+
+        return measure_x * measure_y;
+    }
 }

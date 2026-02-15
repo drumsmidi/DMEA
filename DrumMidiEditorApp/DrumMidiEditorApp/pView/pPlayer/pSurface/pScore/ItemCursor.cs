@@ -2,7 +2,7 @@
 using DrumMidiLibrary.pUtil;
 using Microsoft.Graphics.Canvas;
 
-namespace DrumMidiEditorApp.pView.pPlayer.pSurface.pScoreType2;
+namespace DrumMidiEditorApp.pView.pPlayer.pSurface.pScore;
 
 /// <summary>
 /// プレイヤー描画アイテム：小節線
@@ -73,7 +73,7 @@ internal partial class ItemCursor( float aX, float aY, float aWidth, float aHeig
         rect.Y      += aDiffY;
         rect.Width   = aCursolX;
 
-        if ( Config.Player.ScoreType2.CursorRectOn && _FormatRect != null )
+        if ( Config.Player.Score.CursorRectOn && _FormatRect != null )
         {
             HelperWin2D.DrawFormatRect
                 (

@@ -1,6 +1,8 @@
 ﻿using System;
 using DrumMidiLibrary.pUtil;
 using Microsoft.Graphics.Canvas;
+using Windows.Management.Update;
+using Windows.UI;
 
 namespace DrumMidiEditorApp.pView.pPlayer.pSurface.pSimuration;
 
@@ -63,12 +65,20 @@ internal partial class ItemNote( float aNotePosX, FormatRect aFormatRect, ItemMi
     /// </summary>
     /// <param name="aGraphics">グラフィック</param>
     /// <param name="aDiffX">描画差分X</param>
-    public void Draw( CanvasDrawingSession aGraphics, float aDiffX )
+    public void Draw( CanvasDrawingSession aGraphics, float aDiffX, byte aAlphaColor )
     {
         if ( _DmsItemMidiMap == null || _FormatRect == null )
         {
             return;
         }
+
+        var c = new Color() 
+        { 
+            A = aAlphaColor,
+            R = _FormatRect.Line.LineColor.Color.R,
+            G = _FormatRect.Line.LineColor.Color.G,
+            B = _FormatRect.Line.LineColor.Color.B,
+        };
 
         var distance = _NotePosX + aDiffX;
 
@@ -95,7 +105,7 @@ internal partial class ItemNote( float aNotePosX, FormatRect aFormatRect, ItemMi
                     rect._y + ( rect._height / 2F ),
                     rect._width  / 2F,
                     rect._height / 2F,
-                    _FormatRect.Line.LineColor.Color,
+                    c,
                     _FormatRect.Line.LineSize
                 );
         }

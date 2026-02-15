@@ -875,14 +875,14 @@ public sealed partial class UserControlPlayerPanel : UserControl
     {
         switch ( DrawSet.PlayerSurfaceModeSelect )
         {
+            case ConfigSystem.PlayerSurfaceMode.Score:
+                _PlayerSurface = new pSurface.pScore.PlayerSurface();
+                break;
             case ConfigSystem.PlayerSurfaceMode.Sequence:
                 _PlayerSurface = new pSurface.pSequence.PlayerSurface();
                 break;
             case ConfigSystem.PlayerSurfaceMode.Simuration:
                 _PlayerSurface = new pSurface.pSimuration.PlayerSurface();
-                break;
-            case ConfigSystem.PlayerSurfaceMode.ScoreType2:
-                _PlayerSurface = new pSurface.pScoreType2.PlayerSurface();
                 break;
         }
     }

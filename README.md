@@ -37,8 +37,6 @@
 | DrumMidiLibrary | エディター・プレイヤー共通ライブラリ |
 | DrumMidiEditorApp | エディター |
 | DrumMidiEditorApp.Package | エディター |
-| DrumMidiPlayerApp | プレイヤー（試作中） |
-| DrumMidiPlayerApp.Package | プレイヤー（試作中） |
 
 -----------------------------------------------------------------------------
 # Github設定メモ
