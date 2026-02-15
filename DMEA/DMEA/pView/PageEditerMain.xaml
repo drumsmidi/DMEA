@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="DMEA.pView.PageEditerMain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:menu="using:DMEA.pView.pMenuBar" 
+    xmlns:navi="using:DMEA.pView.pNavi"
+    xmlns:player="using:DMEA.pView.pPlayer" 
+    SizeChanged="Page_SizeChanged"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <RelativePanel>
+    
+            <menu:PageMenuBar x:Name="_PageMenuBar" 
+                RelativePanel.AlignTopWithPanel="True"
+                RelativePanel.AlignLeftWithPanel="True"                                
+                RelativePanel.AlignRightWithPanel="True" />
+
+            <navi:PageNavigation x:Name="_PageNavigation" 
+                RelativePanel.Below="_PageMenuBar"
+                RelativePanel.AlignBottomWithPanel="True"
+                RelativePanel.AlignLeftWithPanel="True"                                
+                RelativePanel.AlignRightWithPanel="True" />
+
+            <player:PagePlayer x:Name="_PagePlayer"
+                RelativePanel.AlignTopWithPanel="True"
+                RelativePanel.AlignBottomWithPanel="True"
+                RelativePanel.AlignLeftWithPanel="True"                                
+                RelativePanel.AlignRightWithPanel="True"                               
+                Visibility="{x:Bind ConfigPlayer.DisplayPlayerVisibility, Mode=OneWay}" />
+
+        </RelativePanel>
+    </Grid>
+</Page>

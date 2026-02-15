@@ -1,0 +1,57 @@
+﻿<UserControl
+    x:Class="DMEA.pView.pMusic.UserControlEqualizer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    xmlns:userctl="using:DMEA.pView.pUserControl" 
+    Unloaded="UserControl_Unloaded">
+
+    <Grid>
+        <userctl:HGroup x:Uid="HGroupEqualizerSetting">
+            <userctl:HGroup.CustomContent>
+
+                <StackPanel Orientation="Vertical" Spacing="6">
+                    <CommandBar
+                        HorizontalAlignment="Left" 
+                        IsSticky="True"
+                        IsOpen="False"
+                        OverflowButtonVisibility="Collapsed">
+
+                        <AppBarButton x:Uid="ButtonEqualizerReset"
+                            Click="EqualizerResetAppBarButton_Click" />
+
+                        <AppBarSeparator />
+
+                        <AppBarToggleButton x:Uid="ButtonEqualizer"
+                            IsChecked="{x:Bind DrawSet.EqualizerOn, Mode=OneTime}"
+                            Checked="EqualizerAppBarToggleButton_CheckChanged"
+                            Unchecked="EqualizerAppBarToggleButton_UncheckChanged" />
+
+                        <AppBarSeparator />
+
+                        <AppBarToggleButton x:Uid="ButtonEqualizerWaveForm"
+                            IsChecked="{x:Bind DrawSet.WaveFormOn, Mode=TwoWay}"
+                            IsEnabled="False"
+                            Checked="EqualizerWaveFormAppBarToggleButton_CheckChanged"
+                            Unchecked="EqualizerWaveFormAppBarToggleButton_CheckChanged" />
+
+                    </CommandBar>
+
+                    <canvas:CanvasControl x:Name = "_EqualizerCanvas"
+                        Draw="EqualizerCanvas_Draw" 
+                        PointerPressed="EqualizerCanvas_PointerPressed"
+                        PointerMoved="EqualizerCanvas_PointerMoved"
+                        PointerReleased="EqualizerCanvas_PointerReleased"
+                        PointerExited="EqualizerCanvas_PointerReleased"
+                        PointerCanceled="EqualizerCanvas_PointerReleased"
+                        PointerCaptureLost="EqualizerCanvas_PointerReleased" />
+
+                    <TextBlock x:Name="_EqualizerInfoTextBlock"
+                        TextAlignment="Right" />
+
+                </StackPanel>
+                
+            </userctl:HGroup.CustomContent>
+        </userctl:HGroup>
+    </Grid>
+</UserControl>

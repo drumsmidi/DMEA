@@ -1,0 +1,66 @@
+﻿<UserControl
+    x:Class="DMEA.pView.pMidiMap.UserControlKeyChangePanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid 
+            Grid.Row="0" 
+            Grid.Column="0" 
+            Grid.RowSpan="2" >
+            
+            <Button x:Name="_DisplayButton"
+                Content=">"
+                Margin="0"
+                Padding="0"
+                Width="20"
+                VerticalAlignment="Stretch"
+                Click="DisplayButton_Click" />
+            
+        </Grid> 
+
+        <Grid x:Name="_HeadGrid"
+            Grid.Row="0" 
+            Grid.Column="1" 
+            Padding="6"
+            BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
+            BorderThickness="1" >
+            
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                
+                <Button x:Uid="ButtonKeyChange"
+                    Style="{ThemeResource AccentButtonStyle}"                        
+                    Click="KeyChangeButton_Click" />
+
+            </StackPanel>
+            
+        </Grid>
+
+        <Grid x:Name="_BodyGrid"
+            Grid.Row="1" 
+            Grid.Column="1" >
+
+            <ListBox x:Name="_MidiMapNoteListBox"
+                ItemsSource="{x:Bind _MidiMapNoteList, Mode=OneWay}"
+                SelectionMode="Single" >
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{x:Bind}" FontFamily="MS Gothic" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                
+            </ListBox>
+            
+        </Grid>
+    </Grid>
+</UserControl>

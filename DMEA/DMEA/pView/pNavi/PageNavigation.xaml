@@ -1,0 +1,43 @@
+﻿<Page
+    x:Class="DMEA.pView.pNavi.PageNavigation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Loaded="Page_Loaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        
+        <NavigationView x:Name="_NaviControl"
+            Grid.Column="0"
+            PaneDisplayMode="LeftCompact" 
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            IsPaneToggleButtonVisible="False"
+            SelectionChanged="NaviControl_SelectionChanged" >
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem Tag="PageMusic"   x:Uid="NaviMusicInfo" />
+                <NavigationViewItem Tag="PageMidiMap" x:Uid="NaviMidiMap" />
+                <NavigationViewItem Tag="PageEdit"    x:Uid="NaviEdit" />
+                <NavigationViewItem Tag="PageScore"   x:Uid="NaviScore" />
+                <NavigationViewItem Tag="PageML"      x:Uid="NaviML" />
+                <NavigationViewItemSeparator />
+                <NavigationViewItem Tag="PageConfig"  x:Uid="NaviSetting" />
+                <NavigationViewItemSeparator />
+                <NavigationViewItem Tag="PageDebug"   x:Uid="NaviDebug" />
+            </NavigationView.MenuItems>
+        </NavigationView>
+                
+        <Frame x:Name="_ContentFrame"
+            Grid.Column="1"
+            Margin="0"
+            Padding="0"
+            BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
+            BorderThickness="1 0 0 0" />
+
+    </Grid>
+</Page>

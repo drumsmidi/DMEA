@@ -1,0 +1,81 @@
+﻿<Page
+    x:Class="DMEA.pView.pMusic.PageMusic"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DMEA.pView.pMusic"
+    NavigationCacheMode="Required"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid 
+        Padding="10" 
+        RowSpacing="10" 
+        ColumnSpacing="6" >
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <StackPanel Orientation="Vertical" Spacing="6">
+
+                <TextBox x:Uid="InputBgmFilePath" 
+                    Text="{x:Bind MusicInfo.BgmFilePath.AbsoluteFilePath, Mode=OneWay}" 
+                    VerticalAlignment="Bottom"
+                    TextChanged="MusicInfoBgmFilePathTextBox_TextChanged" />
+            
+                <Button x:Uid="ButtonFileSelect"
+                    VerticalAlignment="Bottom"
+                    Click="MusicInfoBgmFilePathButton_Click" />
+
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="0">
+            <StackPanel Orientation="Vertical" Spacing="6">
+
+                <NumberBox x:Name="_MusicInfoBpmNumberBox" x:Uid="InputBpm"
+                    Value="{x:Bind MusicInfo.Bpm, Mode=TwoWay}" 
+                    Minimum="{x:Bind ConfigMedia.BpmMin, Mode=OneTime}"
+                    Maximum="{x:Bind ConfigMedia.BpmMax, Mode=OneTime}"
+                    SmallChange="1" 
+                    LargeChange="10"        
+                    ValueChanged="MusicInfoBpmNumberBox_ValueChanged" />
+
+                <NumberBox x:Name="_MusicInfoBgmPlaybackStartPositionNumberBox" x:Uid="InputBgmPlaybackStartPosition"
+                    Value="{x:Bind MusicInfo.BgmPlaybackStartPosition, Mode=TwoWay}" 
+                    Minimum="{x:Bind ConfigMedia.BgmPlaybackStartMinPosition, Mode=OneTime}"
+                    Maximum="{x:Bind ConfigMedia.BgmPlaybackStartMaxPosition, Mode=OneTime}"
+                    SmallChange="0.01" 
+                    LargeChange="0.1" 
+                    ValueChanged="MusicInfoBgmPlaybackStartPositionNumberBox_ValueChanged" />
+
+                <NumberBox x:Name="_MusicInfoBgmVolumeNumberBox" x:Uid="InputBgmVolume"
+                    Value="{x:Bind MusicInfo.BgmVolume, Mode=TwoWay}" 
+                    Minimum="{x:Bind ConfigMedia.BgmMinVolume, Mode=OneTime}"
+                    Maximum="{x:Bind ConfigMedia.BgmMaxVolume, Mode=OneTime}"
+                    SmallChange="10" 
+                    LargeChange="20" 
+                    ValueChanged="MusicInfoBgmVolumeNumberBox_ValueChanged" />
+                
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left">
+            
+            <TextBox x:Uid="InputMusicInfoMemo"
+                Text="{x:Bind MusicInfo.Info, Mode=TwoWay}" 
+                MinWidth="500"
+                AcceptsReturn="True" />
+            
+        </Grid>
+
+        <local:UserControlEqualizer Grid.Row="2" Grid.ColumnSpan="2"/>
+
+    </Grid>
+</Page>

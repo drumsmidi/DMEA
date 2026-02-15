@@ -1,0 +1,22 @@
+﻿<UserControl
+    x:Class="DMEA.pView.pUserControl.HGroup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <TextBlock x:Name="_HeaderTitle" 
+                Text="Header" 
+                Margin="7 0 0 0" />
+        
+            <Border 
+                BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" 
+                BorderThickness="0 1 0 0" 
+                Margin="3 0 3 3">
+            
+                <ContentControl x:Name="_Content"
+                    Margin="10" />
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

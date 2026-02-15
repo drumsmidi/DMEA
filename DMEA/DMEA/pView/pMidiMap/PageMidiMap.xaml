@@ -1,0 +1,20 @@
+﻿<Page
+    x:Class="DMEA.pView.pMidiMap.PageMidiMap"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DMEA.pView.pMidiMap"
+    NavigationCacheMode="Required"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <local:UserControlMidiMapPanel Grid.Column="0" />
+
+        <local:UserControlKeyChangePanel Grid.Column="1" />
+    </Grid>
+    
+</Page>

@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="DMEA.pView.pConfig.PageConfigPlayer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DMEA.pView.pConfig"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    
+    <Grid>
+        <StackPanel Orientation="Vertical" Spacing="6">
+
+            <ComboBox x:Uid="InputPlayerSurfaceMode"
+                ItemsSource="{x:Bind _PlayerSurfaceModeList, Mode=OneTime}"
+                SelectedIndex="{x:Bind DrawSet.PlayerSurfaceModeSelectIndex, Mode=TwoWay}"
+                SelectionChanged="PlayerSurfaceModeComboBox_SelectionChanged" />
+
+            <ComboBox x:Uid="InputPlayerSurfaceEffectMode"
+                IsEnabled="False"
+                ItemsSource="{x:Bind _PlayerSurfaceEffectModeList, Mode=OneTime}"
+                SelectedIndex="{x:Bind DrawSet.PlayerSurfaceEffectModeSelectIndex, Mode=TwoWay}"
+                SelectionChanged="PlayerSurfaceEffectModeComboBox_SelectionChanged" />
+
+            <ToggleSwitch x:Uid="InputPlayerEditMode"
+                IsOn="{x:Bind DrawSet.EditModeOn, Mode=TwoWay}" />
+
+            <ComboBox x:Uid="InputPlayerScreenSize"
+                ItemsSource="{x:Bind _PlayerScreenSizeList, Mode=OneTime}"
+                SelectedIndex="{x:Bind DrawSet.ResolutionScreenIndex, Mode=TwoWay}"
+                SelectionChanged="PlayerScreenSizeComboBox_SelectionChanged" />
+
+            <local:UserControlPlayerScaleItem />
+
+        </StackPanel>
+    </Grid>
+</Page>

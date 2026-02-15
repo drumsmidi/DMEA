@@ -1,0 +1,30 @@
+﻿<Page
+    x:Class="DMEA.pView.pDebug.PageDebugShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer>
+        <StackPanel Padding="10" Spacing="10">
+
+            <Button Content="Open explore" Click="OpenButton_Click" />
+            
+            <Button Content="Shell Toast Show" Click="ToastShowButton_Click" />
+
+            <Button Content="Shell Toast Update" Click="ToastUpdateButton_Click" />
+
+            <Button Content="Shell Toast Clear" Click="ToastClearButton_Click" />
+
+            <Button Content="Shell Badge Number" Click="BadgeNumberButton_Click" />
+
+            <Button Content="Shell Badge Glyph" Click="BadgeGlyphButton_Click" />
+
+            <Button Content="Shell Badge Clear" Click="BadgeClearButton_Click" />
+
+            <Button Content="Shell TaskBar Regist" Click="TaskBarRegistButton_Click" />
+
+            <Button Content="Restart application" Click="RestartAppButton_Click" />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
