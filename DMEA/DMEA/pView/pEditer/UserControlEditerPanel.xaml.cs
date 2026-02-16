@@ -205,6 +205,10 @@ public sealed partial class UserControlEditerPanel : UserControl
     {
         try
         {
+            // タイマーを確実に停止してバックグラウンド待機を消す
+            StopMoveNoteRangeAsyncTimer();
+            StopMoveSheetAsyncTimer();
+
             // Win2D アンロード
             //_EditerCanvas.RemoveFromVisualTree();
             //_EditerCanvas = null;
@@ -605,6 +609,11 @@ public sealed partial class UserControlEditerPanel : UserControl
     }
 
     /// <summary>
+    /// 等間隔処理実行用タイマー起動フラグ
+    /// </summary>
+    private int _MoveNoteRangeAsyncTimerRunning = 0;
+
+    /// <summary>
     /// 等間隔処理実行用タイマー
     /// </summary>
     private PeriodicTimer? _MoveNoteRangeAsyncTimer = null;
@@ -616,6 +625,8 @@ public sealed partial class UserControlEditerPanel : UserControl
     {
         _MoveNoteRangeAsyncTimer?.Dispose();
         _MoveNoteRangeAsyncTimer = null;
+
+        Interlocked.Exchange( ref _MoveNoteRangeAsyncTimerRunning, 0 );
     }
 
     /// <summary>
@@ -624,7 +635,7 @@ public sealed partial class UserControlEditerPanel : UserControl
     /// <param name="aMousePoint"></param>
     private async void MoveNoteRangeAsync( Point aMousePoint )
     {
-        if ( _MoveNoteRangeAsyncTimer != null )
+        if ( Interlocked.Exchange( ref _MoveNoteRangeAsyncTimerRunning, 1 ) == 1 )
         {
             _MoveMousePoint = aMousePoint;
             return;
@@ -701,6 +712,11 @@ public sealed partial class UserControlEditerPanel : UserControl
     }
 
     /// <summary>
+    /// 等間隔処理実行用タイマー起動フラグ
+    /// </summary>
+    private int _MoveSheetAsyncTimerRunning = 0;
+
+    /// <summary>
     /// 等間隔処理実行用タイマー
     /// </summary>
     private PeriodicTimer? _MoveSheetAsyncTimer = null;
@@ -712,6 +728,8 @@ public sealed partial class UserControlEditerPanel : UserControl
     {
         _MoveSheetAsyncTimer?.Dispose();
         _MoveSheetAsyncTimer = null;
+
+        Interlocked.Exchange( ref _MoveSheetAsyncTimerRunning, 0 );
     }
 
     /// <summary>
@@ -720,7 +738,7 @@ public sealed partial class UserControlEditerPanel : UserControl
     /// <param name="aMousePoint"></param>
     private async void MoveSheetAsync( Point aMousePoint )
     {
-        if ( _MoveSheetAsyncTimer != null )
+        if ( Interlocked.Exchange( ref _MoveSheetAsyncTimerRunning, 1 ) == 1 )
         {
             _MoveMousePoint = aMousePoint;
             return;
