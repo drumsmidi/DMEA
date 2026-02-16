@@ -558,21 +558,21 @@ public sealed partial class UserControlEditerPanel : UserControl
                     break;
                 case EActionState.SelectNoteRange:
                     {
-                        StopTimer();
+                        StopMoveNoteRangeAsyncTimer();
 
                         EditSelectNoteRange( p.Position );
                     }
                     break;
                 case EActionState.MoveNoteRange:
                     {
-                        StopTimer();
+                        StopMoveNoteRangeAsyncTimer();
 
                         EditMoveNoteRange( p.Position );
                     }
                     break;
                 case EActionState.MoveSheet:
                     {
-                        StopTimer();
+                        StopMoveSheetAsyncTimer();
                     }
                     break;
                 case EActionState.RemoveBpm:
@@ -607,15 +607,15 @@ public sealed partial class UserControlEditerPanel : UserControl
     /// <summary>
     /// 等間隔処理実行用タイマー
     /// </summary>
-    private PeriodicTimer? _Timer = null;
+    private PeriodicTimer? _MoveNoteRangeAsyncTimer = null;
 
     /// <summary>
     /// タイマー停止
     /// </summary>
-    private void StopTimer()
+    private void StopMoveNoteRangeAsyncTimer()
     {
-        _Timer?.Dispose();
-        _Timer = null;
+        _MoveNoteRangeAsyncTimer?.Dispose();
+        _MoveNoteRangeAsyncTimer = null;
     }
 
     /// <summary>
@@ -624,61 +624,94 @@ public sealed partial class UserControlEditerPanel : UserControl
     /// <param name="aMousePoint"></param>
     private async void MoveNoteRangeAsync( Point aMousePoint )
     {
-        if ( _Timer != null )
+        if ( _MoveNoteRangeAsyncTimer != null )
         {
             _MoveMousePoint = aMousePoint;
             return;
         }
 
-        _Timer = new( TimeSpan.FromSeconds( DrawSet.SheetTimerSecond ) );
-
-        while ( await _Timer.WaitForNextTickAsync() )
+        try
         {
-            var mousePoint  = _MoveMousePoint;
-            var note_pos    = DrawSet.NotePosition;
-            var paddingSize = DrawSet.SheetMovePaddingSize;
+            _MoveNoteRangeAsyncTimer = new( TimeSpan.FromSeconds( DrawSet.SheetTimerSecond ) );
 
-            if ( mousePoint.Y < _ScoreBodyRange.Y + paddingSize.Height )
+            while ( await _MoveNoteRangeAsyncTimer.WaitForNextTickAsync() )
             {
-                note_pos.Y -= (int)( ( _ScoreBodyRange.Y + paddingSize.Height - mousePoint.Y ) / DrawSet.NoteHeightSize );
+                var mousePoint  = _MoveMousePoint;
+                var note_pos    = DrawSet.NotePosition;
+                var paddingSize = DrawSet.SheetMovePaddingSize;
+                var changed     = false;
 
-                if ( note_pos.Y < 0 )
+                if ( mousePoint.Y < _ScoreBodyRange.Y + paddingSize.Height )
                 {
-                    note_pos.Y = 0;
+                    note_pos.Y -= (int)( ( _ScoreBodyRange.Y + paddingSize.Height - mousePoint.Y ) / DrawSet.NoteHeightSize );
+
+                    if ( note_pos.Y < 0 )
+                    {
+                        note_pos.Y = 0;
+                    }
+                    changed = true;
+                }
+                if ( mousePoint.Y > _ScreenSize.Height - paddingSize.Height )
+                {
+                    note_pos.Y += (int)( ( mousePoint.Y - _ScreenSize.Height + paddingSize.Height ) / DrawSet.NoteHeightSize );
+
+                    if ( note_pos.Y >= Score.EditMidiMapSet.DisplayMidiMapAllCount )
+                    {
+                        note_pos.Y = Score.EditMidiMapSet.DisplayMidiMapAllCount - 1;
+                    }
+                    changed = true;
+                }
+                if ( mousePoint.X < _ScoreBodyRange.X + paddingSize.Width )
+                {
+                    note_pos.X -= (int)( ( _ScoreBodyRange.X + paddingSize.Width - mousePoint.X ) / DrawSet.NoteWidthSize );
+
+                    if ( note_pos.X < 0 )
+                    {
+                        note_pos.X = 0;
+                    }
+                    changed = true;
+                }
+                if ( mousePoint.X > _ScreenSize.Width - paddingSize.Width )
+                {
+                    note_pos.X += (int)( ( mousePoint.X - _ScreenSize.Width + paddingSize.Width ) / DrawSet.NoteWidthSize );
+
+                    if ( note_pos.X >= Config.System.NoteCount )
+                    {
+                        note_pos.X = Config.System.NoteCount - 1;
+                    }
+                    changed = true;
+                }
+
+                if ( changed )
+                {
+                    DrawSet.NotePosition = note_pos;
+
+                    Refresh();
                 }
             }
-            if ( mousePoint.Y > _ScreenSize.Height - paddingSize.Height )
-            {
-                note_pos.Y += (int)( ( mousePoint.Y - _ScreenSize.Height + paddingSize.Height ) / DrawSet.NoteHeightSize );
-
-                if ( note_pos.Y >= Score.EditMidiMapSet.DisplayMidiMapAllCount )
-                {
-                    note_pos.Y = Score.EditMidiMapSet.DisplayMidiMapAllCount - 1;
-                }
-            }
-            if ( mousePoint.X < _ScoreBodyRange.X + paddingSize.Width )
-            {
-                note_pos.X -= (int)( ( _ScoreBodyRange.X + paddingSize.Width - mousePoint.X ) / DrawSet.NoteWidthSize );
-
-                if ( note_pos.X < 0 )
-                {
-                    note_pos.X = 0;
-                }
-            }
-            if ( mousePoint.X > _ScreenSize.Width - paddingSize.Width )
-            {
-                note_pos.X += (int)( ( mousePoint.X - _ScreenSize.Width + paddingSize.Width ) / DrawSet.NoteWidthSize );
-
-                if ( note_pos.X >= Config.System.NoteCount )
-                {
-                    note_pos.X = Config.System.NoteCount - 1;
-                }
-            }
-
-            DrawSet.NotePosition = note_pos;
-
-            Refresh();
         }
+        catch ( Exception e )
+        {
+            Log.Error( e );
+        }
+        finally
+        {
+            StopMoveNoteRangeAsyncTimer();
+        }
+    }
+
+    /// <summary>
+    /// 等間隔処理実行用タイマー
+    /// </summary>
+    private PeriodicTimer? _MoveSheetAsyncTimer = null;
+
+    /// <summary>
+    /// タイマー停止
+    /// </summary>
+    private void StopMoveSheetAsyncTimer()
+    {
+        _MoveSheetAsyncTimer?.Dispose();
+        _MoveSheetAsyncTimer = null;
     }
 
     /// <summary>
@@ -687,46 +720,57 @@ public sealed partial class UserControlEditerPanel : UserControl
     /// <param name="aMousePoint"></param>
     private async void MoveSheetAsync( Point aMousePoint )
     {
-        if ( _Timer != null )
+        if ( _MoveSheetAsyncTimer != null )
         {
             _MoveMousePoint = aMousePoint;
             return;
         }
 
-        _Timer = new( TimeSpan.FromSeconds( DrawSet.SheetTimerSecond ) );
-
-        while ( await _Timer.WaitForNextTickAsync() )
+        try
         {
-            var move = new Point
-                (
-                    ( _MoveMousePoint.X - _MouseDownPosition.X ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond,
-                    ( _MoveMousePoint.Y - _MouseDownPosition.Y ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond
-                );
+            _MoveSheetAsyncTimer = new( TimeSpan.FromSeconds( DrawSet.SheetTimerSecond ) );
 
-            if ( move.X == 0 && move.Y == 0 )
+            while ( await _MoveSheetAsyncTimer.WaitForNextTickAsync() )
             {
-                return;
+                var move = new Point
+                    (
+                        ( _MoveMousePoint.X - _MouseDownPosition.X ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond,
+                        ( _MoveMousePoint.Y - _MouseDownPosition.Y ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond
+                    );
+
+                if ( move.X == 0 && move.Y == 0 )
+                {
+                    break;
+                }
+
+                var note_pos = HelperXaml.AdjustRangeIn
+                    (
+                        new
+                        (
+                            DrawSet.NotePosition.X + move.X,
+                            DrawSet.NotePosition.Y + move.Y
+                        ),
+                        new
+                        (
+                            0,
+                            0,
+                            Config.System.NoteCount,
+                            Score.EditChannel.MidiMapSet.DisplayMidiMapAllCount
+                        )
+                    );
+
+                DrawSet.NotePosition = new( (int)note_pos.X, (int)note_pos.Y );
+
+                EventManage.Event_Editer_UpdateSheetPos();
             }
-
-            var note_pos = HelperXaml.AdjustRangeIn
-                (
-                    new
-                    (
-                        DrawSet.NotePosition.X + move.X,
-                        DrawSet.NotePosition.Y + move.Y
-                    ),
-                    new
-                    (
-                        0,
-                        0,
-                        Config.System.NoteCount,
-                        Score.EditChannel.MidiMapSet.DisplayMidiMapAllCount
-                    )
-                );
-
-            DrawSet.NotePosition = new( (int)note_pos.X, (int)note_pos.Y );
-
-            EventManage.Event_Editer_UpdateSheetPos();
+        }
+        catch ( Exception e )
+        {
+            Log.Error( e );
+        }
+        finally
+        {
+            StopMoveSheetAsyncTimer();
         }
     }
 
