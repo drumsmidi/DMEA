@@ -123,7 +123,7 @@ public static class FileIO
 
         // ConfigSystem
         path.FileName = ConfigFile.FileNameConfigSystem;
-        SaveConfig( path, Config.File );
+        SaveConfig( path, Config.System );
 
         // ConfigMedia
         path.FileName = ConfigFile.FileNameConfigMedia;
