@@ -98,7 +98,7 @@ public sealed partial class UserControlPlayerPanel : UserControl
         {
             DrawTaskStop();
 
-            EventManage.Event_Player_UpdateSufaceMode();
+            EventManage.Event_Player_UpdateSurfaceMode();
 
             _FlagIdleTaskStop = false;
 
@@ -140,9 +140,9 @@ public sealed partial class UserControlPlayerPanel : UserControl
                 }
 
                 // プレイヤー描画モード変更
-                if ( DrawSet.FlagUpdateSurfaceModo )
+                if ( DrawSet.FlagUpdateSurfaceMode )
                 {
-                    DrawSet.FlagUpdateSurfaceModo = false;
+                    DrawSet.FlagUpdateSurfaceMode = false;
                     UpdateSurfaceMode();
 
                     EventManage.Event_Player_UpdateScore();

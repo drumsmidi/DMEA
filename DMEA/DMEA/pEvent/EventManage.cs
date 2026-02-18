@@ -211,7 +211,7 @@ public static class EventManage
     private static void Event_Editer_UpdateLayout()
     {
         // 編集履歴クリア
-        Event_Resume_Redo();
+        Event_Resume_ClearResume();
 
         // 範囲選択解除
         Event_Editer_ClearRangeSelect();
@@ -393,9 +393,9 @@ public static class EventManage
     /// <summary>
     /// プレイヤー描画モード更新リクエスト
     /// </summary>
-    public static void Event_Player_UpdateSufaceMode() =>
+    public static void Event_Player_UpdateSurfaceMode() =>
         // 描画ループ処理内で更新フラグを見て更新
-        Config.Player.FlagUpdateSurfaceModo = true;
+        Config.Player.FlagUpdateSurfaceMode = true;
 
     /// <summary>
     /// プレイヤースクリーンサイズ更新通知

@@ -87,7 +87,7 @@ public sealed partial class PageConfigPlayer : Page
                 return;
             }
 
-            EventManage.Event_Player_UpdateSufaceMode();
+            EventManage.Event_Player_UpdateSurfaceMode();
         }
         catch ( Exception e )
         {
@@ -110,7 +110,7 @@ public sealed partial class PageConfigPlayer : Page
                 return;
             }
 
-            EventManage.Event_Player_UpdateSufaceMode();
+            EventManage.Event_Player_UpdateSurfaceMode();
         }
         catch ( Exception e )
         {

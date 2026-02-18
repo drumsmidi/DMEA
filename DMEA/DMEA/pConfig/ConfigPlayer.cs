@@ -39,7 +39,7 @@ public class ConfigPlayer : IConfig
     /// プレイヤー描画モード更新フラグ
     /// </summary>
     [JsonIgnore]
-    public bool FlagUpdateSurfaceModo { get; set; } = false;
+    public bool FlagUpdateSurfaceMode { get; set; } = false;
 
     /// <summary>
     /// サイズ更新フラグ
