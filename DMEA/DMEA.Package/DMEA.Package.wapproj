@@ -25,7 +25,7 @@
     <AssetTargetFallback>net6.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
     <DefaultLanguage>ja-JP</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <PackageCertificateThumbprint>E0430C56206B46A5C97662113BDB083C8734EA1D</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>FD4F01DDA1EB3F945B1AAE664FA03EE6AEE32E4F</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
@@ -48,6 +48,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <None Include="DMEA.Package_TemporaryKey.pfx" />
     <Content Include="Images\logo.jpg" />
     <Content Include="Visuals\AppIcon.altform-lightunplated_targetsize-16.png" />
     <Content Include="Visuals\AppIcon.altform-lightunplated_targetsize-24.png" />
@@ -104,7 +105,6 @@
     <Content Include="Visuals\WideTile.scale-150.png" />
     <Content Include="Visuals\WideTile.scale-200.png" />
     <Content Include="Visuals\WideTile.scale-400.png" />
-    <None Include="DMEA_TemporaryKey.pfx" />
     <Content Include="Images\stop.jpg" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
     <PRIResource Include="Strings\ja-JP\Resources.resw" />

@@ -93,7 +93,7 @@ public sealed partial class PageMusic : Page, INotifyPropertyChanged
 
         try
         {
-            HelperXaml.OpenDialogAsync
+            _ = HelperXaml.OpenDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportBgm,

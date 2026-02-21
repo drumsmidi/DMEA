@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using DMEA.pConfig;
 using DMEL.pControl;
 using DMEL.pLog;
@@ -86,12 +87,7 @@ public sealed partial class UserControlEqualizer : UserControl
     {
         try
         {
-            if ( !HelperXaml.DispatcherQueueHasThreadAccess( this, ApplyEqulizer ) )
-            {
-                return;
-            }
-
-            UpdateEqualizerAudio();
+            HelperXaml.DispatcherQueue( this, () => UpdateEqualizerAudio() );
         }
         catch ( Exception e )
         {
@@ -106,13 +102,15 @@ public sealed partial class UserControlEqualizer : UserControl
     {
         try
         {
-            if ( !HelperXaml.DispatcherQueueHasThreadAccess( this, ResetEqualizer ) )
-            {
-                return;
-            }
-
-            ResetEqualizerAudio();
-            Refresh();
+            HelperXaml.DispatcherQueue
+                ( 
+                    this, 
+                    () => 
+                    { 
+                        ResetEqualizerAudio();
+                        Refresh();
+                    } 
+                );
         }
         catch ( Exception e )
         {
@@ -192,7 +190,7 @@ public sealed partial class UserControlEqualizer : UserControl
                 // 波形描画用のタイマー設定
                 if ( ischecked )
                 {
-                    StartWaveFormAsync();
+                    _ = StartWaveFormAsync();
                 }
                 else
                 {
@@ -209,7 +207,7 @@ public sealed partial class UserControlEqualizer : UserControl
     /// <summary>
     /// WaveForm描画開始
     /// </summary>
-    private async void StartWaveFormAsync()
+    private async Task StartWaveFormAsync()
     {
         if ( _Timer != null )
         {
@@ -220,7 +218,7 @@ public sealed partial class UserControlEqualizer : UserControl
 
         while ( await _Timer.WaitForNextTickAsync() )
         {
-            Refresh();
+            HelperXaml.DispatcherQueue( this, () => Refresh() ); 
         }
     }
 
@@ -546,7 +544,7 @@ public sealed partial class UserControlEqualizer : UserControl
     /// </summary>
     /// <param name="aPoint">イコライザ入力情報</param>
     private void SetEqualizerInfo( Point aGainInfo ) 
-        => _EqualizerInfoTextBlock.Text = $"hz={CalcHz( aGainInfo.X )}   db={CalcGain( aGainInfo.Y )}";
+        => _EqualizerInfoTextBlock.Text = $"hz={CalcHz( aGainInfo.X ):F2}   db={CalcGain( aGainInfo.Y ):F2}";
 
     /// <summary>
     /// BGMイコライザ設定反映

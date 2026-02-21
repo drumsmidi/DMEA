@@ -490,19 +490,19 @@ public sealed partial class UserControlEditerPanel : UserControl
                     {
                         EditNoteRange( p.Position, false );
 
-                        MoveNoteRangeAsync( p.Position );
+                        _ = MoveNoteRangeAsync( p.Position );
                     }
                     break;
                 case EActionState.MoveNoteRange:
                     {
                         EditMoveNoteRange( p.Position, false );
 
-                        MoveNoteRangeAsync( p.Position );
+                        _ = MoveNoteRangeAsync( p.Position );
                     }
                     break;
                 case EActionState.MoveSheet:
                     {
-                        MoveSheetAsync( p.Position );
+                        _ = MoveSheetAsync( p.Position );
                     }
                     break;
             }
@@ -633,7 +633,7 @@ public sealed partial class UserControlEditerPanel : UserControl
     /// ノート範囲移動処理
     /// </summary>
     /// <param name="aMousePoint"></param>
-    private async void MoveNoteRangeAsync( Point aMousePoint )
+    private async Task MoveNoteRangeAsync( Point aMousePoint )
     {
         if ( Interlocked.Exchange( ref _MoveNoteRangeAsyncTimerRunning, 1 ) == 1 )
         {
@@ -736,7 +736,7 @@ public sealed partial class UserControlEditerPanel : UserControl
     /// シート移動処理
     /// </summary>
     /// <param name="aMousePoint"></param>
-    private async void MoveSheetAsync( Point aMousePoint )
+    private async Task MoveSheetAsync( Point aMousePoint )
     {
         if ( Interlocked.Exchange( ref _MoveSheetAsyncTimerRunning, 1 ) == 1 )
         {

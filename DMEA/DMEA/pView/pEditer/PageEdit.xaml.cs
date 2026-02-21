@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using DMEA.pConfig;
 using DMEA.pEvent;
 using DMEA.pModel;
@@ -314,7 +315,7 @@ public sealed partial class PageEdit : Page, INotifyPropertyChanged
             {
                 case EActionState.MoveSheet:
                     {
-                        MoveSheetAsync( p.Position );
+                        _ = MoveSheetAsync( p.Position );
                     }
                     break;
             }
@@ -377,48 +378,72 @@ public sealed partial class PageEdit : Page, INotifyPropertyChanged
     /// シート移動処理
     /// </summary>
     /// <param name="aMousePoint"></param>
-    private async void MoveSheetAsync( Point aMousePoint )
+    private async Task MoveSheetAsync( Point aMousePoint )
     {
+        _MouseMovePosition = aMousePoint;
+
         if ( _Timer != null )
         {
-            _MouseMovePosition = aMousePoint;
             return;
         }
 
         _Timer = new( TimeSpan.FromSeconds( DrawSet.SheetTimerSecond ) );
 
-        while ( await _Timer.WaitForNextTickAsync() )
+        try
         {
-            var move = new Point
-                (
-                    ( _MouseMovePosition.X - _MouseDownPosition.X ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond,
-                    ( _MouseMovePosition.Y - _MouseDownPosition.Y ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond
-                );
-
-            if ( move.X == 0 && move.Y == 0 )
+            while ( await _Timer.WaitForNextTickAsync() )
             {
-                return;
-            }
+                var move = new Point
+                    (
+                        ( _MouseMovePosition.X - _MouseDownPosition.X ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond,
+                        ( _MouseMovePosition.Y - _MouseDownPosition.Y ) / DrawSet.SheetMoveSpeed * DrawSet.SheetTimerSecond
+                    );
 
-            var note_pos = HelperXaml.AdjustRangeIn
-                (
-                    new
+                if ( move.X == 0 && move.Y == 0 )
+                {
+                    return;
+                }
+
+                var note_pos = HelperXaml.AdjustRangeIn
                     (
-                        DrawSet.NotePosition.X + move.X,
-                        DrawSet.NotePosition.Y + move.Y
-                    ),
-                    new
-                    (
-                        0,
-                        0,
-                        Config.System.NoteCount,
-                        Score.EditChannel.MidiMapSet.DisplayMidiMapAllCount
-                    )
+                        new
+                        (
+                            DrawSet.NotePosition.X + move.X,
+                            DrawSet.NotePosition.Y + move.Y
+                        ),
+                        new
+                        (
+                            0,
+                            0,
+                            Config.System.NoteCount,
+                            Score.EditChannel.MidiMapSet.DisplayMidiMapAllCount
+                        )
+                    );
+
+                HelperXaml.DispatcherQueue
+                ( 
+                    _EditerPanel, 
+                    () =>
+                    {
+                        DrawSet.NotePosition = new( (int)note_pos.X, (int)note_pos.Y );
+
+                        EventManage.Event_Editer_UpdateSheetPos();
+                    } 
                 );
-
-            DrawSet.NotePosition = new( (int)note_pos.X, (int)note_pos.Y );
-
-            EventManage.Event_Editer_UpdateSheetPos();
+            }
+        }
+        catch ( ObjectDisposedException )
+        {
+            // タイマーが Dispose された競合を許容
+        }
+        catch ( Exception e )
+        {
+            Log.Error( e );
+        }
+        finally
+        {
+            _Timer?.Dispose();
+            _Timer = null;
         }
     }
 

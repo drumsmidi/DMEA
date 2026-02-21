@@ -30,7 +30,7 @@ public class PlayerSurface : PlayerSurfaceBase
     /// <summary>
     /// 小節番号行ヘッダ範囲
     /// </summary>
-    private Rect _MeasureNoHeadRange = new();
+    //private Rect _MeasureNoHeadRange = new();
 
     /// <summary>
     /// 小節番号行ボディ範囲

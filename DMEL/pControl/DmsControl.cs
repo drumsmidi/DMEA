@@ -48,7 +48,7 @@ public static class DmsControl
             // オーバーサブスクリプションを使用すると、使用可能なハードウェア スレッドよりも多くのスレッドを作成できます。
             // これは、タスクの処理に追加のスレッドが必要になる可能性があるというヒントをタスク スケジューラに提供し、
             // 他のスレッドまたはローカル スレッド プール キューの作業項目の進行をスケジューラがブロックするのを防ぎます。
-            _MusicTask = Task.Factory.StartNew( () => ProcSequenceAsync( _CancellationTokenSource.Token ), TaskCreationOptions.LongRunning );
+            _MusicTask = Task.Factory.StartNew( () => _ = ProcSequenceAsync( _CancellationTokenSource.Token ), TaskCreationOptions.LongRunning );
 
             //_MusicTask = Task.Run(() => { ProcSequenceAsync(); });
 
@@ -427,7 +427,7 @@ public static class DmsControl
     /// <summary>
     /// 音楽再生処理
     /// </summary>
-    private static async void ProcSequenceAsync( CancellationToken aCancellationToken )
+    private static async Task ProcSequenceAsync( CancellationToken aCancellationToken )
     {
         var     range_play      = false;
         int     loop_start;

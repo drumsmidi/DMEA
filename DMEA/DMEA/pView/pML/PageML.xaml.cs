@@ -27,7 +27,7 @@ public sealed partial class PageML : Page
     {
         try
         {
-            MLControl.Start();
+            _ = MLControl.Start();
         }
         catch ( Exception e )
         {

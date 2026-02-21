@@ -30,7 +30,7 @@ public static class HelperXaml
     /// <param name="aButtonText"></param>
     /// <param name="aAsyncAction"></param>
     /// <param name="aCancelAction"></param>
-    public static async void ProcDialogCancelAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aButtonText, Func<Task> aAsyncAction, Action aCancelAction )
+    public static async Task ProcDialogCancelAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aButtonText, Func<Task> aAsyncAction, Action aCancelAction )
     {
         var cd = new ContentDialog
         {
@@ -67,7 +67,7 @@ public static class HelperXaml
     /// <param name="aContent"></param>
     /// <param name="aButtonText"></param>
     /// <param name="aAction"></param>
-    public static async void MessageDialogOkAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aButtonText, Action aAction )
+    public static async Task MessageDialogOkAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aButtonText, Action aAction )
     {
         var cd = new ContentDialog
         {
@@ -93,7 +93,7 @@ public static class HelperXaml
     /// <param name="aContent"></param>
     /// <param name="aButtonText"></param>
     /// <param name="aAction"></param>
-    public static async void MessageDialogCancelAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aButtonText, Action aAction )
+    public static async Task MessageDialogCancelAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aButtonText, Action aAction )
     {
         var cd = new ContentDialog
         {
@@ -120,7 +120,7 @@ public static class HelperXaml
     /// <param name="aYesButtonText"></param>
     /// <param name="aNoButtonText"></param>
     /// <param name="aAction"></param>
-    public static async void MessageDialogYesNoAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aYesButtonText, string aNoButtonText, Action aAction )
+    public static async Task MessageDialogYesNoAsync( XamlRoot aContentXamlRoot, string aTitle, string aContent, string aYesButtonText, string aNoButtonText, Action aAction )
     {
         var cd = new ContentDialog
         {
@@ -147,7 +147,7 @@ public static class HelperXaml
     /// <param name="aPageContent"></param>
     /// <param name="aAction"></param>
     public static void InputDialogOkCancelAsync( XamlRoot aContentXamlRoot, string aTitle, object aPageContent, Action aAction )
-        => InputDialogOkCancelAsync
+        => _ = InputDialogOkCancelAsync
             (
                 aContentXamlRoot,
                 string.IsNullOrEmpty( aTitle ) ? HelperResources.GetString( "Dialog/Input" ) : aTitle,
@@ -166,7 +166,7 @@ public static class HelperXaml
     /// <param name="aYesButtonText"></param>
     /// <param name="aCancelButtonText"></param>
     /// <param name="aAction"></param>
-    public static async void InputDialogOkCancelAsync( XamlRoot aContentXamlRoot, string aTitle, object aPageContent, string aYesButtonText, string aCancelButtonText, Action aAction )
+    public static async Task InputDialogOkCancelAsync( XamlRoot aContentXamlRoot, string aTitle, object aPageContent, string aYesButtonText, string aCancelButtonText, Action aAction )
     {
         var cd = new ContentDialog
         {
@@ -248,7 +248,7 @@ public static class HelperXaml
     /// <param name="aContentXamlRoot"></param>
     /// <param name="aColor"></param>
     /// <param name="aAction"></param>
-    public static async void ColorDialogAsync( XamlRoot aContentXamlRoot, Color aColor, Action<Color> aAction )
+    public static async Task ColorDialogAsync( XamlRoot aContentXamlRoot, Color aColor, Action<Color> aAction )
     {
         var content = new ColorPicker
         {
@@ -292,7 +292,7 @@ public static class HelperXaml
     /// <param name="aSettingsIdentifier">ピッカー設定名</param>
     /// <param name="aAction">ファイル選択時の後続処理</param>
     /// <returns>True:選択、False:未選択</returns>
-    public static async void OpenDialogAsync( Window aOwnerWindow, List<string> aFileTypeFilters, PickerLocationId aInitialLocation, string aSettingsIdentifier, Action<GeneralPath> aAction )
+    public static async Task OpenDialogAsync( Window aOwnerWindow, List<string> aFileTypeFilters, PickerLocationId aInitialLocation, string aSettingsIdentifier, Action<GeneralPath> aAction )
     {
         try
         {
@@ -348,7 +348,7 @@ public static class HelperXaml
     /// <param name="aSettingsIdentifier">ピッカー設定名</param>
     /// <param name="aAction">ファイル選択時の後続処理</param>
     /// <returns>True:選択、False:未選択</returns>
-    public static async void SaveDialogAsync( Window aOwnerWindow, List<string> aFileTypeChoices, string aSaveFileName, PickerLocationId aInitialLocation, string aSettingsIdentifier, Action<GeneralPath> aAction )
+    public static async Task SaveDialogAsync( Window aOwnerWindow, List<string> aFileTypeChoices, string aSaveFileName, PickerLocationId aInitialLocation, string aSettingsIdentifier, Action<GeneralPath> aAction )
     {
         try
         {
@@ -395,6 +395,26 @@ public static class HelperXaml
     #endregion
 
     #region UserControl
+
+    /// <summary>
+    /// aActionイベントを実行する。
+    /// 但し、スレッドアクセスを持たない場合、TryEnqueueを使用する
+    /// </summary>
+    /// <param name="aUserControl"></param>
+    /// <param name="aAction"></param>
+    /// <returns>True:スレッドアクセスあり、False:スレッドアクセスなし</returns>
+    public static bool DispatcherQueue( UserControl aUserControl, Action aAction )
+    {
+        if ( !aUserControl.DispatcherQueue.HasThreadAccess )
+        {
+            _ = aUserControl.DispatcherQueue.TryEnqueue( DispatcherQueuePriority.Normal, () => aAction() );
+            return false;
+        }
+
+        aAction();
+
+        return true;
+    }
 
     /// <summary>
     /// スレッドアクセスを持たない場合、aActionイベントを実行する

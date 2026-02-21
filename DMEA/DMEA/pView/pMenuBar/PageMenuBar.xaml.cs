@@ -208,7 +208,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.MessageDialogYesNoAsync
+            _ = HelperXaml.MessageDialogYesNoAsync
                 (
                     Content.XamlRoot,
                     HelperResources.GetString( "DialogMenuItemNew/Title" ),
@@ -246,7 +246,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.OpenDialogAsync
+            _ = HelperXaml.OpenDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportDmsOpen,
@@ -281,7 +281,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
 
             if ( !edit_filepath.IsExistFile )
             {
-                HelperXaml.SaveDialogAsync
+                _ = HelperXaml.SaveDialogAsync
                     (
                         ControlAccess.MainWindow,
                         Config.File.SupportDmsSave,
@@ -318,7 +318,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.SaveDialogAsync
+            _ = HelperXaml.SaveDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportDmsSave,
@@ -350,7 +350,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.SaveDialogAsync
+            _ = HelperXaml.SaveDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportMidi,
@@ -382,7 +382,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.SaveDialogAsync
+            _ = HelperXaml.SaveDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportVideo,
@@ -395,7 +395,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
 
                         var cancel = new CancellationTokenSource ();
 
-                        HelperXaml.ProcDialogCancelAsync
+                        _ = HelperXaml.ProcDialogCancelAsync
                             (
                                 Content.XamlRoot,
                                 HelperResources.GetString( "DialogMenuItemExportVideo/Title" ),
@@ -429,7 +429,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.SaveDialogAsync
+            _ = HelperXaml.SaveDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportPdf,
@@ -466,7 +466,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.SaveDialogAsync
+            _ = HelperXaml.SaveDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportDtx,
@@ -500,7 +500,7 @@ public sealed partial class PageMenuBar : Page, INotifyPropertyChanged
         {
             PlayerStop();
 
-            HelperXaml.OpenDialogAsync
+            _ = HelperXaml.OpenDialogAsync
                 (
                     ControlAccess.MainWindow,
                     Config.File.SupportMidi,
