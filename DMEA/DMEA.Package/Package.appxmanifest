@@ -36,7 +36,8 @@
       <uap:VisualElements
         DisplayName="DMEA"
         BackgroundColor="transparent"  Description="DMEA" Square150x150Logo="Visuals\MediumTile.png" Square44x44Logo="Visuals\AppIcon.png">
-        <uap:DefaultTile Square71x71Logo="Visuals\SmallTile.png" Wide310x150Logo="Visuals\WideTile.png" Square310x310Logo="Visuals\LargeTile.png"/>
+        <uap:DefaultTile Square71x71Logo="Visuals\SmallTile.png" Wide310x150Logo="Visuals\WideTile.png" Square310x310Logo="Visuals\LargeTile.png">
+        </uap:DefaultTile >
         <uap:SplashScreen Image="Visuals\SplashScreen.png"/>
         <uap:LockScreen BadgeLogo="Visuals\BadgeLogo.png" Notification="badge"/>
       </uap:VisualElements>
