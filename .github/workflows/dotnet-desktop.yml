@@ -58,10 +58,10 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: DrumMidiEditorApp.sln
+      Solution_Name: DMEA.sln
       Test_Project_Path: none
-      Wap_Project_Directory: DrumMidiEditorApp\DrumMidiEditorApp (Package)
-      Wap_Project_Path: DrumMidiEditorApp\DrumMidiEditorApp (Package)\DrumMidiEditorApp (Package).wapproj
+      Wap_Project_Directory: DMEA\DMEA.Package
+      Wap_Project_Path: DMEA\DMEA.Package\DMEA.Package.wapproj
 
     steps:
     - name: Checkout
