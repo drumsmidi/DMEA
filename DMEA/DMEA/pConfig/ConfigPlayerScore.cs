@@ -32,7 +32,7 @@ public class ConfigPlayerScore : IConfig
     [JsonInclude]
     public FormatColor SheetColor { get; set; } = new()
     {
-        Color = Color.FromArgb( 255, 0, 0, 0 ),
+        Color = Color.FromArgb( 255, 14, 14, 14 ),
     };
 
     #endregion

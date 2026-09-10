@@ -379,15 +379,15 @@ public class PlayerSurfaceBase : IPlayerSurface
         // SwapChainの描画セッション作成時に背景色指定済み
         //args.DrawingSession.Clear( DrawSetCom.SheetColor.Color );
 
-        if ( _DmsPlayState == PlayState.Stop )
-        {
-            // Effect機能確認用に停止中に画像を表示
-            _StopImage ??= CanvasBitmap.LoadAsync( args.DrawingSession, new Uri("ms-appx:///Images/stop.jpg") );
-            if ( _StopImage.Status == AsyncStatus.Completed )
-            {
-                args.DrawingSession.DrawImage( _StopImage.GetResults() );
-            }
-        }
+        //if ( _DmsPlayState == PlayState.Stop )
+        //{
+        //    // Effect機能確認用に停止中に画像を表示
+        //    _StopImage ??= CanvasBitmap.LoadAsync( args.DrawingSession, new Uri("ms-appx:///Images/stop.jpg") );
+        //    if ( _StopImage.Status == AsyncStatus.Completed )
+        //    {
+        //        args.DrawingSession.DrawImage( _StopImage.GetResults() );
+        //    }
+        //}
 
         return _DmsPlayState is PlayState.Playing or PlayState.Recording;
     }
