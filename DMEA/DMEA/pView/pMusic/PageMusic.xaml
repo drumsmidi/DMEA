@@ -13,6 +13,7 @@
         
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="500" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -21,7 +22,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <StackPanel Orientation="Vertical" Spacing="6">
 
                 <TextBox x:Uid="InputBgmFilePath" 
@@ -66,16 +67,30 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left">
+        <Grid Grid.Row="1" Grid.Column="1">
             
             <TextBox x:Uid="InputMusicInfoMemo"
                 Text="{x:Bind MusicInfo.Info, Mode=TwoWay}" 
                 MinWidth="500"
+                MaxHeight="190"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
                 AcceptsReturn="True" />
             
         </Grid>
 
         <local:UserControlEqualizer Grid.Row="2" Grid.ColumnSpan="2"/>
+
+        <Grid Grid.Row="1" Grid.Column="2"  Grid.RowSpan="2" VerticalAlignment="Top">
+
+            <TextBox x:Uid="InputMusicLyric"
+                Text="{x:Bind MusicInfo.Lyric, Mode=TwoWay}" 
+                MinWidth="500"
+                MinHeight="560"
+                MaxHeight="560"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                AcceptsReturn="True" />
+
+        </Grid>
 
     </Grid>
 </Page>

@@ -40,6 +40,12 @@ public class ConfigSystem : IConfig
     public string DefaultScoreInfo { get; private set; } = string.Empty;
 
     /// <summary>
+    /// 歌詞初期値
+    /// </summary>
+    [JsonIgnore]
+    public string DefaultScoreLyric { get; private set; } = string.Empty;
+
+    /// <summary>
     /// BGM音量初期値
     /// </summary>
     [JsonIgnore]

@@ -40,6 +40,7 @@ internal class ScoreStream1000 : ScoreStreamBase
 
     private const string TAG_SCORE              = "SCORE";
     private const string TAG_SCORE_INFO         = "INFO";
+    private const string TAG_SCORE_LYRIC        = "LYRIC";
     private const string TAG_SCORE_FILEPATH     = "FILEPATH";
     private const string TAG_SCORE_RPP          = "RPP";
     private const string TAG_SCORE_VOLUME       = "VOLUME";
@@ -112,6 +113,7 @@ internal class ScoreStream1000 : ScoreStreamBase
                 $"<xsd:complexType name='{TAG_SCORE}_Type'>" +
                     $"<xsd:sequence>" +
                         $"<xsd:element name='{TAG_SCORE_INFO}'     type='xsd:string' minOccurs='0' maxOccurs='1' />" +
+                        $"<xsd:element name='{TAG_SCORE_LYRIC}'    type='xsd:string' minOccurs='0' maxOccurs='1' />" +
                         $"<xsd:element name='{TAG_SCORE_FILEPATH}' type='xsd:string' minOccurs='0' maxOccurs='1' />" +
                         $"<xsd:element name='{TAG_SCORE_RPP}'      type='xsd:double' minOccurs='0' maxOccurs='1' />" +
                         $"<xsd:element name='{TAG_SCORE_BASEBPM}'  type='xsd:double' minOccurs='0' maxOccurs='1' />" +
@@ -283,6 +285,12 @@ internal class ScoreStream1000 : ScoreStreamBase
             else if ( aReader.LocalName.Equals( TAG_SCORE_INFO ) )
             {
                 aScore.Info = aReader.ReadString().Replace( "\n", "\r\n" );
+            }
+            #endregion
+            #region <LYRIC/>
+            else if ( aReader.LocalName.Equals( TAG_SCORE_LYRIC ) )
+            {
+                aScore.Lyric = aReader.ReadString().Replace( "\n", "\r\n" );
             }
             #endregion
             #region <FILEPATH/>
@@ -464,6 +472,9 @@ internal class ScoreStream1000 : ScoreStreamBase
         {
             // <INFO />
             aWriter.WriteElementString( TAG_SCORE_INFO      , $"{aScore.Info.Replace( "\r\n", "\n" )}" );
+
+            // <LYRIC />
+            aWriter.WriteElementString( TAG_SCORE_LYRIC     , $"{aScore.Lyric.Replace( "\r\n", "\n" )}" );
 
             // <FILEPATH />
             aWriter.WriteElementString( TAG_SCORE_FILEPATH  , $"{aScore.BgmFilePath.RelativeFilePath}" );

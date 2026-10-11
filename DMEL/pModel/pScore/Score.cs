@@ -63,6 +63,11 @@ public partial class Score : DisposeBaseClass
     public string Info { get; set; } = ConfigLib.System.DefaultScoreInfo;
 
     /// <summary>
+    /// 歌詞
+    /// </summary>
+    public string Lyric { get; set; } = ConfigLib.System.DefaultScoreLyric;
+
+    /// <summary>
     /// BGMファイルパス
     /// </summary>
     public GeneralPath BgmFilePath { get; set; } = ConfigLib.System.DefaultBgmFilePath;

@@ -581,4 +581,7 @@ BPMノートを含める</value>
   <data name="MenuItemExportDtx.Text" xml:space="preserve">
     <value>Dtx</value>
   </data>
+  <data name="InputMusicLyric.Header" xml:space="preserve">
+    <value>歌詞</value>
+  </data>
 </root>
